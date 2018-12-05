@@ -1,1 +1,0 @@
-pulpcore/pulpcore/app/manage.py

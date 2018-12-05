@@ -9,9 +9,7 @@ python:
 env:
   matrix:
     - DJANGO_MAX=2.2.100 DB=postgres TEST=pulp
-    - DJANGO_MAX=2.2.100 TEST=docs
-  global:
-    secure: kzbI/DagIGIOFjVEyLyYGEi/xVwiq5M8FCEM3mOtXK9ocYs1Ky1ABkcgLrOLBb+S7SMNjy4XnUWGUxhBGWQLDw2/OimKFoHpCHGt1Cb4rXhWDSVPGgDXQzyW8pJsPKtAbemfx5a4oRP82vmpgB/htJ+8dE5CIAZWU8d9dbvQbro=
+    #- DJANGO_MAX=2.2.100 TEST=docs
 matrix:
   fast_finish: true
 addons:
@@ -26,19 +24,22 @@ script: source .travis/script.sh
 
 jobs:
   include:
-  - stage: deploy-pulpcore
-    script: bash .travis/deploy.sh pulpcore
-    if: tag =~ ^pulpcore-3.0*
-  - stage: deploy-plugin
-    script: bash .travis/deploy.sh plugin
+  - stage: deploy
+    script: skip
     if: tag =~ ^pulpcore-plugin*
+    deploy:
+      provider: pypi
+      distributions: sdist bdist_wheel
+      user: pulp
+      password:
+        secure: # TODO
   - stage: publish-beta-docs
     script: bash .travis/publish_docs.sh beta
     env:
       - DJANGO_MAX=2.2.100
       - DB=postgres
       - TEST=docs
-    if: tag =~ ^pulpcore-3.0*
+    if: tag =~ ^pulpcore-plugin-3.0*
   - stage: publish-nightly-docs
     script: bash .travis/publish_docs.sh nightly
     env:
