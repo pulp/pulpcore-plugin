@@ -26,13 +26,14 @@ jobs:
   include:
   - stage: deploy
     script: skip
-    if: tag =~ ^pulpcore-plugin*
     deploy:
       provider: pypi
       distributions: sdist bdist_wheel
       user: pulp
       password:
-        secure: # TODO
+        secure: "0zFPQTIK1wj79aFK56aPF78a/D68sQM/Y7hqf4syOV+LedZ5GkUAZGVU2Z+gp0RiLQREawUwFQOzOhRW4NKXsDawrvuplum1XHl82vUWUL/s29Or/hdBoBKmgL+HTS4aFMB2LI4XmJH9c/1wuK+5Zo5ptynJbsFb+YgRchQXBCxXIn+Ia4AFoIEpOXM5qhvLytuGpkdmSSU7mMRmAGG/uaoUatJOVLgWFTiTCeG28q12C0yj9iqZrzTfgSloEh30kRTZH5XX2EIbXB6c9I96By/xcMEd0slakrDc7zCN3KEc35Y0x5BsMhU+TFaEHXIp0mt4oK82I4IMPtnF+/o/Lx2ZRnNwVgicJEj3mx/owqcE60yQTpAJf9cyJ7JS2TldBcWcrfbGoxPYZCKmn9DvPfqDhLLXF9klSG91+sYvRw/yMo9ZPq6mqaDQy8hlssgxQNjzz7FWLKNoJs/Ty4kBlzLB9PIV/bReN0tRfmcJMF9lESt5PAnvj1SFgpCT89k6szK78dTBOroKLsDn/KfYDTmveb8uTgYaM/48XuSexZP6iGaB2Bads1OZLdT3LbzsB2VsHlt/h4q7cSE5wxnRkR2YbmcY4dox/PymgwPHCMKEfCJjarFlG5a1OpyiVHWTxvL7lrOHwU1Ljad84AojmQZu3eruHCpstvoeQ1UVNRE="
+      on:
+        tags: true
   - stage: publish-beta-docs
     script: bash .travis/publish_docs.sh beta
     env:
