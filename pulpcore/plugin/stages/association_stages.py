@@ -131,3 +131,56 @@ class ContentUnitUnassociation(Stage):
 
                     await out_q.put(queryset_to_unassociate)
                 await out_q.put(None)
+
+
+class RemoveDuplicates(Stage):
+    """
+    Stage allows plugins to remove content that would break repository uniqueness constraints.
+
+    This stage is expected to be added by the DeclarativeVersion. See that class for example usage.
+
+    """
+
+    def __init__(self, new_version, model, field_names):
+        """
+        Args:
+            new_version (:class:`~pulpcore.plugin.models.RepositoryVersion`): The repo version this
+                stage unassociates content from.
+            model (:class:`pulpcore.plugin.models.Content`): Subclass of a Content model to
+                indicate which content type to operate on.
+            field_names (list): List of field names to ensure uniqueness within a repository
+                version.
+        """
+        self.new_version = new_version
+        self.model = model
+        self.field_names = field_names
+
+    async def __call__(self, in_q, out_q):
+        """
+        The coroutine for this stage.
+
+        Args:
+            in_q (:class:`asyncio.Queue`): The queue to receive
+                :class:`~pulpcore.plugin.stages.DeclarativeContent` objects from.
+            out_q (:class:`asyncio.Queue`): The queue to put
+                :class:`~pulpcore.plugin.stages.DeclarativeContent` into.
+
+        Returns:
+            The coroutine for this stage.
+        """
+        rm_q = Q()
+        async for batch in self.batches(in_q):
+            for declarative_content in batch:
+                if isinstance(declarative_content.content, self.model):
+                    unit_q_dict = {field: getattr(declarative_content.content, field)
+                                   for field in self.field_names}
+                    # Don't remove *this* object if it is already in the repository version.
+                    not_this = ~Q(pk=declarative_content.content.pk)
+                    dupe = Q(**unit_q_dict)
+                    rm_q |= Q(dupe & not_this)
+            queryset_to_unassociate = self.model.objects.filter(rm_q)
+            self.new_version.remove_content(queryset_to_unassociate)
+
+            for declarative_content in batch:
+                await out_q.put(declarative_content)
+        await out_q.put(None)

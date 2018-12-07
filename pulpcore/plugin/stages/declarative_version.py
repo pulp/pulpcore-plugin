@@ -5,13 +5,14 @@ from pulpcore.plugin.tasking import WorkingDirectory
 
 from .api import create_pipeline, EndStage
 from .artifact_stages import ArtifactDownloader, ArtifactSaver, QueryExistingArtifacts
-from .association_stages import ContentUnitAssociation, ContentUnitUnassociation
+from .association_stages import ContentUnitAssociation, ContentUnitUnassociation, RemoveDuplicates
 from .content_unit_stages import ContentUnitSaver, QueryExistingContentUnits
 
 
 class DeclarativeVersion:
 
-    def __init__(self, first_stage, repository, mirror=True, download_artifacts=True):
+    def __init__(self, first_stage, repository, mirror=True, download_artifacts=True,
+                 remove_duplicates=None):
         """
         A pipeline that creates a new :class:`~pulpcore.plugin.models.RepositoryVersion` from a
         stream of :class:`~pulpcore.plugin.stages.DeclarativeContent` objects.
@@ -69,6 +70,13 @@ class DeclarativeVersion:
         >>> first_stage = MyFirstStage(remote)
         >>> DeclarativeVersion(first_stage, repository).create()
 
+        Example using remove_duplicates:
+
+        # This will enforce that within a repository version, `FileContent.relative_path` is
+        # unique.
+        >>> remove_dupes = [{'model': FileContent, 'field_names': ['relative_path']}]
+        >>> DeclarativeVersion(first_stage, repository, remove_duplicates=remove_dupes).create()
+
         Args:
              first_stage (:class:`~pulpcore.plugin.stages.Stage`): The first stage to receive
                  :class:`~pulpcore.plugin.stages.DeclarativeContent` from.
@@ -85,11 +93,19 @@ class DeclarativeVersion:
                  content unit query and saving. 'False' will only handle content units and will not
                  perform Artifact downloading and saving as part of the pipeline. 'False' is the
                  default.
+            remove_duplicates (list): A list of dictionaries that indicate objects which are
+                considered duplicates within a single repository version. These objects will be
+                removed from the new version, making room for the new objects passing through the
+                pipeline. Each dict should have 2 keys, `model`, which is a subclass of
+                :class:`pulpcore.plugin.models.Content` and `field_names` which is a list of
+                strings corresponding to fields on the provided model.
+
         """
         self.first_stage = first_stage
         self.repository = repository
         self.mirror = mirror
         self.download_artifacts = download_artifacts
+        self.remove_duplicates = remove_duplicates or []
 
     def pipeline_stages(self, new_version):
         """
@@ -114,6 +130,9 @@ class DeclarativeVersion:
         if self.download_artifacts:
             pipeline.extend([QueryExistingArtifacts(), ArtifactDownloader(), ArtifactSaver()])
         pipeline.extend([QueryExistingContentUnits(), ContentUnitSaver()])
+        for dupe_query_dict in self.remove_duplicates:
+            pipeline.extend([RemoveDuplicates(new_version, **dupe_query_dict)])
+
         return pipeline
 
     def create(self):
