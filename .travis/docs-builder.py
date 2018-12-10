@@ -88,8 +88,6 @@ def main():
 
     build_type = opts.build_type
 
-    x_y_version = '3.0'
-
     # build the docs via the Pulp project itself
     print("Building the docs")
     docs_directory = os.sep.join([WORKING_DIR, 'docs'])
@@ -101,14 +99,14 @@ def main():
 
     # rsync the docs
     local_path_arg = os.sep.join([docs_directory, '_build', 'html']) + os.sep
-    remote_path_arg = '%s@%s:%sen/%s/' % (USERNAME, HOSTNAME, SITE_ROOT, x_y_version)
+    remote_path_arg = '%s@%s:%sen/pulpcore-plugin/' % (USERNAME, HOSTNAME, SITE_ROOT)
     if build_type != 'ga':
         remote_path_arg += build_type + '/'
 
-        make_directory_with_rsync(['en', x_y_version, build_type])
+        make_directory_with_rsync(['en', 'pulpcore-plugin', build_type])
         rsync_command = ['rsync', '-avzh', '--delete', local_path_arg, remote_path_arg]
     else:
-        make_directory_with_rsync(['en', x_y_version])
+        make_directory_with_rsync(['en', 'pulpcore-plugin'])
         rsync_command = ['rsync', '-avzh', '--delete', '--exclude', 'nightly', '--exclude',
                          'testing', local_path_arg, remote_path_arg]
     exit_code = subprocess.call(rsync_command, cwd=docs_directory)
