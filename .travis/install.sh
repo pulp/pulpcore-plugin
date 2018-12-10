@@ -5,11 +5,6 @@ set -v
 pip install "Django<=$DJANGO_MAX"
 pip install -r test_requirements.txt
 
-if [ "$TEST" = 'docs' ]; then
-  pip3 install 'sphinx<1.8.0' sphinxcontrib-openapi sphinx_rtd_theme
-  return "$?"
-fi
-
 export COMMIT_MSG=$(git show HEAD^2 -s)
 export PULP_PR_NUMBER=$(echo $COMMIT_MSG | grep -oP 'Required\ PR:\ https\:\/\/github\.com\/pulp\/pulp\/pull\/(\d+)' | awk -F'/' '{print $7}')
 export PULP_FILE_PR_NUMBER=$(echo $COMMIT_MSG | grep -oP 'Required\ PR:\ https\:\/\/github\.com\/pulp\/pulp_file\/pull\/(\d+)' | awk -F'/' '{print $7}')
@@ -25,6 +20,13 @@ else
   git checkout FETCH_HEAD
   pip install -e .
   cd ../pulpcore-plugin
+fi
+
+pip install -e .
+
+if [ "$TEST" = 'docs' ]; then
+  pip3 install 'sphinx<1.8.0' sphinxcontrib-openapi sphinx_rtd_theme
+  return "$?"
 fi
 
 if [ -z "$PULP_FILE_PR_NUMBER" ]; then
