@@ -137,7 +137,7 @@ type, it's a good idea to use it.
 
 Pulp's Plugin API provides asyncio based downloaders which provide efficient parallel downloading.
 These downloaders provide built-in size and/or digest based verification if the expected values can
-be passed into the downloaders. See the :doc:`downloader docs <../../plugins/plugin-api/download>`
+be passed into the downloaders. See the :doc:`downloader docs <../download>`
 for more information.
 
 .. note::

@@ -3,7 +3,7 @@ Plugin Writer's Guide
 
 .. note::
    This documentation is for Pulp Plugin developers. For Pulp Core development, see the
-   :doc:`../../contributing/architecture/app-layout`.
+   (link to Pulp Core development docs).
 
 Pulp Core does not manage content itself, but instead relies on plugins to add support for one
 content type or another. Examples of a content type include a RPM package, Ansible role, or
@@ -32,7 +32,7 @@ the plugin writing process.
    basics
    releasing
 
-The Pulp :doc:`../plugin-api/overview` is versioned separately from the Pulp Core and consists
+The :doc:`../index` is versioned separately from the Pulp Core and consists
 of everything importable within the :mod:`pulpcore.plugin` namespace. When writing plugins, care should
 be taken to only import Pulp Core components exposed in this namespace; importing from elsewhere
 within the Pulp Core (e.g. importing directly from ``pulpcore.app``, ``pulpcore.exceptions``, etc.)
