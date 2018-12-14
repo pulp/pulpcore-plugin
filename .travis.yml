@@ -22,6 +22,13 @@ install: source .travis/install.sh
 before_script: source .travis/before_script.sh
 script: source .travis/script.sh
 
+stages:
+  - name: test
+  - name: deploy
+    if: tag IS present
+  - name: publish-beta-docs
+    if: tag IS present
+  - name: publish-nightly-docs
 jobs:
   include:
   - stage: deploy
