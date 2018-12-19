@@ -64,7 +64,7 @@ class DownloaderFactory:
         self._handler_map = {'https': self._http_or_https, 'http': self._http_or_https,
                              'file': self._generic}
         self._session = self._make_aiohttp_session_from_remote()
-        self._semaphore = asyncio.Semaphore(value=remote.connection_limit)
+        self._semaphore = asyncio.Semaphore(value=remote.download_concurrency)
         atexit.register(self._session.close)
 
     def _make_aiohttp_session_from_remote(self):
