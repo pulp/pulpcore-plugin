@@ -225,7 +225,7 @@ class ArtifactDownloader(Stage):
     downloads completed. Since it's a stream the total count isn't known until it's finished.
 
     This stage drains all available items from `in_q` and starts as many downloaders as possible
-    (up to `connection_limit` set on a Remote)
+    (up to `download_concurrency` set on a Remote)
 
     Args:
         max_concurrent_content (int): The maximum number of
