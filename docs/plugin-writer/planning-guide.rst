@@ -176,3 +176,25 @@ as a publishing requirement.
 .. note::
    Write down any requirements for a webserver to interact with a client to facilitate content
    discovery.
+
+
+Database Gotchas
+^^^^^^^^^^^^^^^^
+
+Plugin writers should be aware that certain things may not be database agnostic. Here is a list of a
+few things we've found.
+
+Setting ``db_index`` or ``unique`` on a ``TextField`` will cause problems when using MySQL/MariaDB::
+
+   name = models.TextField(db_index=True)  # BLOB/TEXT column 'name' used in key specification without a key length
+
+For this reason, we recommend using ``CharField`` in cases where the field needs to be indexed.
+
+Also, the max length for ``CharField`` in MySQL/MariaDB is 255::
+
+   name = models.CharField(max_length=256)  # MyModel.name: (mysql.E001) MySQL does not allow unique CharFields to have a max_length > 255
+
+In general, we recommend testing your plugins against as many database systems as possible. Travis
+or other continuous integration environments can be also used to verify that your plugin is database
+agnostic.
+
