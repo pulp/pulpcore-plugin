@@ -149,7 +149,7 @@ class ArtifactDownloader(Stage):
         """
         downloaders_for_content = [
             d_artifact.download() for d_artifact in d_content.d_artifacts
-            if d_artifact.artifact.pk is None
+            if d_artifact.artifact.pk is None and not d_artifact.deferred_download
         ]
         if downloaders_for_content:
             await asyncio.gather(*downloaders_for_content)
@@ -185,7 +185,7 @@ class ArtifactSaver(Stage):
             da_to_save = []
             for d_content in batch:
                 for d_artifact in d_content.d_artifacts:
-                    if d_artifact.artifact.pk is None:
+                    if d_artifact.artifact.pk is None and not d_artifact.deferred_download:
                         d_artifact.artifact.file = str(d_artifact.artifact.file)
                         da_to_save.append(d_artifact)
 

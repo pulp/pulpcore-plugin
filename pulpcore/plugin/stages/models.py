@@ -26,14 +26,17 @@ class DeclarativeArtifact:
         remote (:class:`~pulpcore.plugin.models.Remote`): The remote used to fetch this
             :class:`~pulpcore.plugin.models.Artifact`.
         extra_data (dict): A dictionary available for additional data to be stored in.
+        deferred_download (bool): Whether this artifact should be downloaded and saved
+            in the artifact stages. Defaults to `False`. See :ref:`lazy-support`.
 
     Raises:
         ValueError: If `artifact`, `url`, `relative_path`, or `remote` are not specified.
     """
 
-    __slots__ = ('artifact', 'url', 'relative_path', 'remote', 'extra_data')
+    __slots__ = ('artifact', 'url', 'relative_path', 'remote', 'extra_data', 'deferred_download')
 
-    def __init__(self, artifact=None, url=None, relative_path=None, remote=None, extra_data=None):
+    def __init__(self, artifact=None, url=None, relative_path=None, remote=None, extra_data=None,
+                 deferred_download=False):
         if not url:
             raise ValueError(_("DeclarativeArtifact must have a 'url'"))
         if not relative_path:
@@ -47,6 +50,7 @@ class DeclarativeArtifact:
         self.relative_path = relative_path
         self.remote = remote
         self.extra_data = extra_data or {}
+        self.deferred_download = deferred_download
 
     async def download(self):
         """
