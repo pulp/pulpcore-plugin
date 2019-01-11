@@ -184,3 +184,33 @@ class ContentUnitSaver(Stage):
 
         """
         pass
+
+
+class ResolveContentFutures(Stage):
+    """
+    This stage resolves the futures in :class:`~pulpcore.plugin.stages.DeclarativeContent`.
+
+    Futures results are set to the found/created :class:`~pulpcore.plugin.models.Content`.
+    """
+
+    async def __call__(self, in_q, out_q):
+        """
+        The coroutine for this stage.
+
+        Args:
+            in_q (:class:`asyncio.Queue`): The queue to receive
+                :class:`~pulpcore.plugin.stages.DeclarativeContent` objects from.
+            out_q (:class:`asyncio.Queue`): The queue to put
+                :class:`~pulpcore.plugin.stages.DeclarativeContent` into.
+
+        Returns:
+            The coroutine for this stage.
+        """
+        while True:
+            d_content = await in_q.get()
+            if d_content is None:
+                await out_q.put(None)
+                break
+            if d_content.future is not None:
+                d_content.future.set_result(d_content.content)
+            await out_q.put(d_content)
