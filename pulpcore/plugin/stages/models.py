@@ -2,6 +2,8 @@ from gettext import gettext as _
 
 import asyncio
 
+from pulpcore.plugin.models import Artifact
+
 
 class DeclarativeArtifact:
     """
@@ -45,6 +47,33 @@ class DeclarativeArtifact:
         self.relative_path = relative_path
         self.remote = remote
         self.extra_data = extra_data or {}
+
+    async def download(self):
+        """
+        Download content and update the associated Artifact.
+        """
+        expected_digests = {}
+        validation_kwargs = {}
+        for digest_name in self.artifact.DIGEST_FIELDS:
+            digest_value = getattr(self.artifact, digest_name)
+            if digest_value:
+                expected_digests[digest_name] = digest_value
+        if expected_digests:
+            validation_kwargs['expected_digests'] = expected_digests
+        if self.artifact.size:
+            expected_size = self.artifact.size
+            validation_kwargs['expected_size'] = expected_size
+        downloader = self.remote.get_downloader(
+            url=self.url,
+            **validation_kwargs
+        )
+        # Custom downloaders may need extra information to complete the request.
+        download_result = await downloader.run(extra_data=self.extra_data)
+        self.artifact = Artifact(
+            **download_result.artifact_attributes,
+            file=download_result.path
+        )
+        return download_result
 
 
 class DeclarativeContent:
