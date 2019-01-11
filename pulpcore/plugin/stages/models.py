@@ -1,5 +1,7 @@
 from gettext import gettext as _
 
+import asyncio
+
 
 class DeclarativeArtifact:
     """
@@ -61,12 +63,15 @@ class DeclarativeContent:
         d_artifacts (list): A list of zero or more
             :class:`~pulpcore.plugin.stages.DeclarativeArtifact` objects associated with `content`.
         extra_data (dict): A dictionary available for additional data to be stored in.
+        future (:class:`~asyncio.Future`): A future that gets resolved to the
+            :class:`~pulpcore.plugin.models.Content` in the
+            :class:`~pulpcore.plugin.stages.ResolveContentFutures` stage.
 
     Raises:
         ValueError: If `content` is not specified.
     """
 
-    __slots__ = ('content', 'd_artifacts', 'extra_data')
+    __slots__ = ('content', 'd_artifacts', 'extra_data', 'future')
 
     def __init__(self, content=None, d_artifacts=None, extra_data=None):
         if not content:
@@ -74,3 +79,13 @@ class DeclarativeContent:
         self.content = content
         self.d_artifacts = d_artifacts or []
         self.extra_data = extra_data or {}
+        self.future = None
+
+    def get_future(self):
+        """
+        Return the existing or a new future.
+        """
+        if self.future is None:
+            # If on 3.7, we could preferrably use get_running_loop()
+            self.future = asyncio.get_event_loop().create_future()
+        return self.future

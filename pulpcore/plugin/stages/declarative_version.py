@@ -6,7 +6,7 @@ from pulpcore.plugin.tasking import WorkingDirectory
 from .api import create_pipeline, EndStage
 from .artifact_stages import ArtifactDownloader, ArtifactSaver, QueryExistingArtifacts
 from .association_stages import ContentUnitAssociation, ContentUnitUnassociation, RemoveDuplicates
-from .content_unit_stages import ContentUnitSaver, QueryExistingContentUnits
+from .content_unit_stages import ContentUnitSaver, QueryExistingContentUnits, ResolveContentFutures
 
 
 class DeclarativeVersion:
@@ -129,7 +129,7 @@ class DeclarativeVersion:
         pipeline = [self.first_stage]
         if self.download_artifacts:
             pipeline.extend([QueryExistingArtifacts(), ArtifactDownloader(), ArtifactSaver()])
-        pipeline.extend([QueryExistingContentUnits(), ContentUnitSaver()])
+        pipeline.extend([QueryExistingContentUnits(), ContentUnitSaver(), ResolveContentFutures()])
         for dupe_query_dict in self.remove_duplicates:
             pipeline.extend([RemoveDuplicates(new_version, **dupe_query_dict)])
 
