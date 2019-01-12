@@ -47,7 +47,7 @@ class ProfilingQueue(Queue):
         item = super().get_nowait()
         if item:
             now = time.time()
-            item.extra_data['last_waiting_time'] = now - item.extra_data['last_put_time']
+            item.extra_data['last_waiting_time'] = now - item.extra_data['lastput_time']
             item.extra_data['last_get_time'] = now
         return item
 
@@ -85,7 +85,7 @@ class ProfilingQueue(Queue):
             CONN.cursor().execute(formatted_sql)
             CONN.commit()
 
-            item.extra_data['last_put_time'] = now
+            item.extra_data['lastput_time'] = now
             self.last_arrival_time = now
         return super().put_nowait(item)
 

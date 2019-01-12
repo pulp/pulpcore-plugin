@@ -5,8 +5,8 @@ from pulpcore.plugin.tasking import WorkingDirectory
 
 from .api import create_pipeline, EndStage
 from .artifact_stages import ArtifactDownloader, ArtifactSaver, QueryExistingArtifacts
-from .association_stages import ContentUnitAssociation, ContentUnitUnassociation, RemoveDuplicates
-from .content_unit_stages import ContentUnitSaver, QueryExistingContentUnits, ResolveContentFutures
+from .association_stages import ContentAssociation, ContentUnassociation, RemoveDuplicates
+from .content_stages import ContentSaver, QueryExistingContents, ResolveContentFutures
 
 
 class DeclarativeVersion:
@@ -35,17 +35,17 @@ class DeclarativeVersion:
 
         To do this, the plugin writer should subclass the
         :class:`~pulpcore.plugin.stages.Stage` class and define its
-        :meth:`__call__()` interface which returns a coroutine. This coroutine should
+        :meth:`run()` interface which returns a coroutine. This coroutine should
         download metadata, create the corresponding
         :class:`~pulpcore.plugin.stages.DeclarativeContent` objects, and put them into the
-        :class:`asyncio.Queue` to send them down the pipeline. For example:
+        :class:`asyncio.Queue` via :meth:`put()` to send them down the pipeline. For example:
 
         >>> class MyFirstStage(Stage):
         >>>
         >>>     def __init__(remote):
         >>>         self.remote = remote
         >>>
-        >>>     async def __call__(self, out_q):
+        >>>     async def run(self):
         >>>         downloader = remote.get_downloader(url=remote.url)
         >>>         result = await downloader.run()
         >>>         for entry in read_my_metadata_file_somehow(result.path)
@@ -53,8 +53,7 @@ class DeclarativeVersion:
         >>>             artifact = Artifact(entry)  # make Artifact in memory-only
         >>>             da = DeclarativeArtifact(artifact, url, entry.relative_path, self.remote)
         >>>             dc = DeclarativeContent(content=unit, d_artifacts=[da])
-        >>>             await out_q.put(dc)
-        >>>         await out_q.put(None)
+        >>>             await self.put(dc)
 
         To use your first stage with the pipeline you have to instantiate the subclass and pass it
         to :class:`~pulpcore.plugin.stages.DeclarativeVersion`.
@@ -78,21 +77,21 @@ class DeclarativeVersion:
         >>> DeclarativeVersion(first_stage, repository, remove_duplicates=remove_dupes).create()
 
         Args:
-             first_stage (:class:`~pulpcore.plugin.stages.Stage`): The first stage to receive
-                 :class:`~pulpcore.plugin.stages.DeclarativeContent` from.
-             repository (:class:`~pulpcore.plugin.models.Repository`): The repository receiving the
-                 new version.
-             mirror (bool): 'True' removes content units from the
-                 :class:`~pulpcore.plugin.models.RepositoryVersion` that are not
-                 requested in the :class:`~pulpcore.plugin.stages.DeclarativeVersion` stream.
-                 'False' (additive) only adds content units observed in the
-                 :class:`~pulpcore.plugin.stages.DeclarativeVersion stream`, and does not remove any
-                 pre-existing units in the :class:`~pulpcore.plugin.models.RepositoryVersion`.
-                 'True' is the default.
-             download_artifacts (bool): 'True' includes Artifact downloading and saving along with
-                 content unit query and saving. 'False' will only handle content units and will not
-                 perform Artifact downloading and saving as part of the pipeline. 'False' is the
-                 default.
+            first_stage (:class:`~pulpcore.plugin.stages.Stage`): The first stage to receive
+                :class:`~pulpcore.plugin.stages.DeclarativeContent` from.
+            repository (:class:`~pulpcore.plugin.models.Repository`): The repository receiving the
+                new version.
+            mirror (bool): 'True' removes content units from the
+                :class:`~pulpcore.plugin.models.RepositoryVersion` that are not
+                requested in the :class:`~pulpcore.plugin.stages.DeclarativeVersion` stream.
+                'False' (additive) only adds content units observed in the
+                :class:`~pulpcore.plugin.stages.DeclarativeVersion stream`, and does not remove any
+                pre-existing units in the :class:`~pulpcore.plugin.models.RepositoryVersion`.
+                'True' is the default.
+            download_artifacts (bool): 'True' includes Artifact downloading and saving along with
+                content unit query and saving. 'False' will only handle content units and will not
+                perform Artifact downloading and saving as part of the pipeline. 'False' is the
+                default.
             remove_duplicates (list): A list of dictionaries that indicate objects which are
                 considered duplicates within a single repository version. These objects will be
                 removed from the new version, making room for the new objects passing through the
@@ -109,7 +108,7 @@ class DeclarativeVersion:
 
     def pipeline_stages(self, new_version):
         """
-        Build the list of pipeline stages feeding into the ContentUnitAssociation stage.
+        Build the list of pipeline stages feeding into the ContentAssociation stage.
 
         If the `self.download_artifacts` is False the pipeline will not include Artifact downloading
         and saving stages.
@@ -129,7 +128,7 @@ class DeclarativeVersion:
         pipeline = [self.first_stage]
         if self.download_artifacts:
             pipeline.extend([QueryExistingArtifacts(), ArtifactDownloader(), ArtifactSaver()])
-        pipeline.extend([QueryExistingContentUnits(), ContentUnitSaver(), ResolveContentFutures()])
+        pipeline.extend([QueryExistingContents(), ContentSaver(), ResolveContentFutures()])
         for dupe_query_dict in self.remove_duplicates:
             pipeline.extend([RemoveDuplicates(new_version, **dupe_query_dict)])
 
@@ -143,9 +142,9 @@ class DeclarativeVersion:
             with RepositoryVersion.create(self.repository) as new_version:
                 loop = asyncio.get_event_loop()
                 stages = self.pipeline_stages(new_version)
-                stages.append(ContentUnitAssociation(new_version))
+                stages.append(ContentAssociation(new_version))
                 if self.mirror:
-                    stages.append(ContentUnitUnassociation(new_version))
+                    stages.append(ContentUnassociation(new_version))
                 stages.append(EndStage())
                 pipeline = create_pipeline(stages)
                 loop.run_until_complete(pipeline)
