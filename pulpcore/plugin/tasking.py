@@ -26,7 +26,7 @@ class Task:
         """
         Append and save a non-fatal error for the currently executing task.
         Fatal errors should not use this. Instead they should raise an Exception,
-        preferably one that inherits from :class: `pulpcore.server.exception.PulpException`.
+        preferably one that inherits from :class: `pulpcore.plugin.exceptions.PulpException`.
 
         This is saved in a structured way to the :attr: `~pulpcore.app.models.Task.non_fatal_errors`
         attribute on the :class: `~pulpcore.app.models.Task` model.
