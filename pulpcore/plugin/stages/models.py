@@ -51,6 +51,9 @@ class DeclarativeArtifact:
     async def download(self):
         """
         Download content and update the associated Artifact.
+
+        Returns:
+            Returns the :class:`~pulpcore.plugin.download.DownloadResult` of the Artifact.
         """
         expected_digests = {}
         validation_kwargs = {}
@@ -113,6 +116,9 @@ class DeclarativeContent:
     def get_future(self):
         """
         Return the existing or a new future.
+
+        Returns:
+            An existing :class:`asyncio.Future` or a newly created one.
         """
         if self.future is None:
             # If on 3.7, we could preferrably use get_running_loop()
