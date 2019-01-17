@@ -1,6 +1,7 @@
 import asyncio
 
 import asynctest
+import mock
 
 from pulpcore.plugin.stages import Stage, EndStage
 
@@ -19,32 +20,40 @@ class TestStage(asynctest.TestCase):
             await batch_it.__anext__()
 
     async def test_single_batch_and_none(self):
-        self.in_q.put_nowait(1)
-        self.in_q.put_nowait(2)
+        c1 = mock.Mock(does_batch=True)
+        c2 = mock.Mock(does_batch=True)
+        self.in_q.put_nowait(c1)
+        self.in_q.put_nowait(c2)
         self.in_q.put_nowait(None)
         batch_it = self.stage.batches(minsize=1)
-        self.assertEqual([1, 2], await batch_it.__anext__())
+        self.assertEqual([c1, c2], await batch_it.__anext__())
         with self.assertRaises(StopAsyncIteration):
             await batch_it.__anext__()
 
     async def test_batch_and_single_none(self):
-        self.in_q.put_nowait(1)
-        self.in_q.put_nowait(2)
+        c1 = mock.Mock(does_batch=True)
+        c2 = mock.Mock(does_batch=True)
+        self.in_q.put_nowait(c1)
+        self.in_q.put_nowait(c2)
         batch_it = self.stage.batches(minsize=1)
-        self.assertEqual([1, 2], await batch_it.__anext__())
+        self.assertEqual([c1, c2], await batch_it.__anext__())
         self.in_q.put_nowait(None)
         with self.assertRaises(StopAsyncIteration):
             await batch_it.__anext__()
 
     async def test_two_batches(self):
-        self.in_q.put_nowait(1)
-        self.in_q.put_nowait(2)
+        c1 = mock.Mock(does_batch=True)
+        c2 = mock.Mock(does_batch=True)
+        c3 = mock.Mock(does_batch=True)
+        c4 = mock.Mock(does_batch=True)
+        self.in_q.put_nowait(c1)
+        self.in_q.put_nowait(c2)
         batch_it = self.stage.batches(minsize=1)
-        self.assertEqual([1, 2], await batch_it.__anext__())
-        self.in_q.put_nowait(3)
-        self.in_q.put_nowait(4)
+        self.assertEqual([c1, c2], await batch_it.__anext__())
+        self.in_q.put_nowait(c3)
+        self.in_q.put_nowait(c4)
         self.in_q.put_nowait(None)
-        self.assertEqual([3, 4], await batch_it.__anext__())
+        self.assertEqual([c3, c4], await batch_it.__anext__())
         with self.assertRaises(StopAsyncIteration):
             await batch_it.__anext__()
 
@@ -61,7 +70,7 @@ class TestMultipleStages(asynctest.TestCase):
         async def run(self):
             for i in range(self.num):
                 await asyncio.sleep(0)  # Force reschedule
-                await self.put(i)
+                await self.put(mock.Mock(does_batch=True))
 
     class MiddleStage(Stage):
         def __init__(self, num, minsize, test_case, *args, **kwargs):

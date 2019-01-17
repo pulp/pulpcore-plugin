@@ -108,14 +108,18 @@ class Stage:
         """
         batch = []
         shutdown = False
+        no_block = False
 
         def add_to_batch(content):
             nonlocal batch
             nonlocal shutdown
+            nonlocal no_block
             if content is None:
                 shutdown = True
                 log.debug(_('%(name)s - shutdown.'), {'name': self})
             else:
+                if not content.does_batch:
+                    no_block = True
                 batch.append(content)
 
         while not shutdown:
@@ -129,7 +133,7 @@ class Stage:
                 else:
                     add_to_batch(content)
 
-            if batch and (len(batch) >= minsize or shutdown):
+            if batch and (len(batch) >= minsize or shutdown or no_block):
                 log.debug(
                     _('%(name)s - next batch[%(length)d].'),
                     {
@@ -138,6 +142,7 @@ class Stage:
                     })
                 yield batch
                 batch = []
+                no_block = False
 
     async def put(self, item):
         """

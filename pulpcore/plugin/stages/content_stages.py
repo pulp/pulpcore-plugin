@@ -184,8 +184,8 @@ class ResolveContentFutures(Stage):
     different content type `Bar`. Consider this code in FirstStage::
 
         # Create d_content and d_artifact for a `foo_a`
-        foo_a = DeclarativeContent(...)
-        foo_a_future = foo_a.get_future()  # This is awaitable
+        foo_a = DeclarativeContent(..., does_batch=False)
+        foo_a_future = foo_a.get_or_create_future()  # This is awaitable
 
         ...
 
