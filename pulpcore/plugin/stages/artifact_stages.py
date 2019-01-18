@@ -146,65 +146,20 @@ class ArtifactDownloaderRunner():
         self._pending.add(asyncio.ensure_future(task))
         return task
 
-    async def _handle_content_unit(self, content):
+    async def _handle_content_unit(self, d_content):
         """Handle one content unit.
 
         Returns:
             The number of downloads
         """
-        downloaders_for_content = self._downloaders_for_content(content)
+        downloaders_for_content = [
+            d_artifact.download() for d_artifact in d_content.d_artifacts
+            if d_artifact.artifact.pk is None
+        ]
         if downloaders_for_content:
-            downloads = await asyncio.gather(*downloaders_for_content)
-            self._update_content(content, downloads)
-        await self.out_q.put(content)
+            await asyncio.gather(*downloaders_for_content)
+        await self.out_q.put(d_content)
         return len(downloaders_for_content)
-
-    def _downloaders_for_content(self, content):
-        """
-        Compute a list of downloader coroutines, one for each artifact to download for `content`.
-
-        Returns:
-            List of downloader coroutines (may be empty)
-        """
-        downloaders_for_content = []
-        for declarative_artifact in content.d_artifacts:
-            if declarative_artifact.artifact.pk is None:
-                # this needs to be downloaded
-                expected_digests = {}
-                validation_kwargs = {}
-                for digest_name in declarative_artifact.artifact.DIGEST_FIELDS:
-                    digest_value = getattr(declarative_artifact.artifact, digest_name)
-                    if digest_value:
-                        expected_digests[digest_name] = digest_value
-                if expected_digests:
-                    validation_kwargs['expected_digests'] = expected_digests
-                if declarative_artifact.artifact.size:
-                    expected_size = declarative_artifact.artifact.size
-                    validation_kwargs['expected_size'] = expected_size
-                downloader = declarative_artifact.remote.get_downloader(
-                    url=declarative_artifact.url,
-                    **validation_kwargs
-                )
-                # Custom downloaders may need extra information to complete the request.
-                downloaders_for_content.append(
-                    downloader.run(extra_data=declarative_artifact.extra_data)
-                )
-
-        return downloaders_for_content
-
-    def _update_content(self, content, downloads):
-        """Update the content using the download results."""
-        for download_result in downloads:
-
-            def url_lookup(x):
-                return x.url == download_result.url
-            d_artifact = list(filter(url_lookup, content.d_artifacts))[0]
-            if d_artifact.artifact.pk is None:
-                new_artifact = Artifact(
-                    **download_result.artifact_attributes,
-                    file=download_result.path
-                )
-                d_artifact.artifact = new_artifact
 
 
 class ArtifactDownloader(Stage):
