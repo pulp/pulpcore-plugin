@@ -6,26 +6,26 @@ versioning <http://semver.org/>`_. Backwards incompatible changes may be made un
 Plugin API reaches stability with v1.0. For the latest version of the Plugin API see
 :doc:`release notes <../release-notes/index>`.
 
-
-.. toctree::
-    models
-    serializers
-    storage
-    viewsets
-    tasking
-    download
-    stages
-    profiling
-
-.. automodule:: pulpcore.plugin
-    :imported-members:
-
 Plugin Writer's Guide
 ---------------------
 .. toctree::
    plugin-writer/index
 
+Plugin Writer's Reference
+-------------------------
+.. toctree::
+   :maxdepth: 1
+
+   reference/index
+
+Plugin API Reference
+--------------------
+.. toctree::
+   api-reference/index
+
 Release Notes
 -------------
 .. toctree::
    release-notes/index
+
+
