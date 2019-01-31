@@ -81,37 +81,37 @@ class ContentUnitUnassociation(Stage):
         self.new_version = new_version
 
     async def __call__(self, in_q, out_q):
-            """
+        """
+        The coroutine for this stage.
+
+        Args:
+            in_q (:class:`asyncio.Queue`): Each item is a
+                :class:`django.db.models.query.QuerySet` of
+                :class:`~pulpcore.plugin.models.Content` subclass that are already associated
+                but not included in the stream of items from `in_q`. One
+                :class:`django.db.models.query.QuerySet` is put for each
+                :class:`~pulpcore.plugin.models.Content` type.
+            out_q (:class:`asyncio.Queue`): Each item is a
+                :class:`django.db.models.query.QuerySet` of
+                :class:`~pulpcore.plugin.models.Content` subclass that were unassociated. One
+                :class:`django.db.models.query.QuerySet` is put for each
+                :class:`~pulpcore.plugin.models.Content` type.
+
+        Returns:
             The coroutine for this stage.
+        """
+        with ProgressBar(message='Un-Associating Content') as pb:
+            while True:
+                queryset_to_unassociate = await in_q.get()
+                if queryset_to_unassociate is None:
+                    break
 
-            Args:
-                in_q (:class:`asyncio.Queue`): Each item is a
-                    :class:`django.db.models.query.QuerySet` of
-                    :class:`~pulpcore.plugin.models.Content` subclass that are already associated
-                    but not included in the stream of items from `in_q`. One
-                    :class:`django.db.models.query.QuerySet` is put for each
-                    :class:`~pulpcore.plugin.models.Content` type.
-                out_q (:class:`asyncio.Queue`): Each item is a
-                    :class:`django.db.models.query.QuerySet` of
-                    :class:`~pulpcore.plugin.models.Content` subclass that were unassociated. One
-                    :class:`django.db.models.query.QuerySet` is put for each
-                    :class:`~pulpcore.plugin.models.Content` type.
+                self.new_version.remove_content(queryset_to_unassociate)
+                pb.done = pb.done + queryset_to_unassociate.count()
+                pb.save()
 
-            Returns:
-                The coroutine for this stage.
-            """
-            with ProgressBar(message='Un-Associating Content') as pb:
-                while True:
-                    queryset_to_unassociate = await in_q.get()
-                    if queryset_to_unassociate is None:
-                        break
-
-                    self.new_version.remove_content(queryset_to_unassociate)
-                    pb.done = pb.done + queryset_to_unassociate.count()
-                    pb.save()
-
-                    await out_q.put(queryset_to_unassociate)
-                await out_q.put(None)
+                await out_q.put(queryset_to_unassociate)
+            await out_q.put(None)
 
 
 class RemoveDuplicates(Stage):
