@@ -9,7 +9,9 @@ user-facing responses. Generally, plugins will create a serializer field for eac
 model that should be user-facing.
 
 Most plugins will implement:
- * serializer(s) for plugin specific content type(s), should be subclassed from ContentSerializer
+ * serializer(s) for plugin specific content type(s), should be subclassed from one of
+   NoArtifactContentSerializer, SingleArtifactContentSerializer, or
+   MultipleArtifactContentSerializer, depending on the properties of the content type(s)
  * serializer(s) for plugin specific remote(s), should be subclassed from RemoteSerializer
  * serializer(s) for plugin specific publisher(s), should be subclassed from PublisherSerializer
 
@@ -22,17 +24,17 @@ serializer needs to add that field as well.
 
 .. code-block:: python
 
-      class FileContentSerializer(ContentSerializer):
+      class FileContentSerializer(SingleArtifactContentSerializer):
           """
           Serializer for File Content.
           """
 
           relative_path = serializers.CharField(
               help_text="Relative location of the file within the repository"
-      )
+          )
 
       class Meta:
-            fields = tuple(set(ContentSerializer.Meta.fields) + ('relative_path',)
+            fields = ContentSerializer.Meta.fields + ('relative_path',)
             model = FileContent
 
 Help Text
