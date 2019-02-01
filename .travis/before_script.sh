@@ -25,14 +25,14 @@ echo "DATABASES = {
 # Run migrations.
 export DJANGO_SETTINGS_MODULE=pulpcore.app.settings
 export PULP_CONTENT_HOST=localhost:8080
+
 pulp-manager makemigrations pulp_app --noinput
+if [ "$TEST" != 'docs' ]; then
+  pulp-manager makemigrations file --noinput
+fi
+
 pulp-manager migrate auth --noinput
 pulp-manager migrate --noinput
-
-if [ "$TEST" != 'docs' ]; then
-  pulp-manager makemigrations pulp_file --noinput
-  pulp-manager migrate --noinput
-fi
 
 pulp-manager reset-admin-password --password admin
 pulp-manager runserver >> ~/django_runserver.log 2>&1 &
