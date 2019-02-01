@@ -25,9 +25,12 @@ To define a new content type(s), e.g. ``ExampleContent``:
 * uniqueness should be specified in ``Meta`` class of newly defined ``ExampleContent`` model,
 * ``unique_together`` should be specified for the ``Meta`` class of ``ExampleContent`` model,
 * create a serializer for your new Content type as a subclass of
-  :class:`pulpcore.plugin.serializers.ContentSerializer`,
+  :class:`pulpcore.plugin.serializers.NoArtifactContentSerializer`,
+  :class:`pulpcore.plugin.serializers.SingleArtifactContentSerializer`, or
+  :class:`pulpcore.plugin.serializers.MultipleArtifactContentSerializer`
 * create a viewset for your new Content type as a subclass of
-  :class:`pulpcore.plugin.viewsets.ContentViewSet`
+  :class:`pulpcore.plugin.viewsets.ContentViewSet`, and define your ``create()`` method based
+  on the serializer you chose.
 
 :class:`~pulpcore.plugin.models.Content` model should not be used directly anywhere in plugin code.
 Only plugin-defined Content classes are expected to be used.
