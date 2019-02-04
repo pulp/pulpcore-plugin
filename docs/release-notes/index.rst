@@ -10,6 +10,12 @@ The Plugin API currently supports version 3.y of Pulp Core.
 See :doc:`Plugin API <../index>` and
 :doc:`Plugin Development <../plugin-writer/index>`.
 
+0.1.0b18
+========
+
+* `List of plugin API related changes in beta 18 <https://github.com/pulp/pulpcore-plugin/pulls?utf8=%E2%9C%93&q=is%3Aclosed+merged%3A2019-01-15T14%3A10%3A00-06%3A00..2019-02-04T15%3A30%3A00-06%3A00+>`_
+
+
 0.1.0b17
 ========
 
