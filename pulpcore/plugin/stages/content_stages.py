@@ -177,6 +177,22 @@ class ResolveContentFutures(Stage):
     This stage resolves the futures in :class:`~pulpcore.plugin.stages.DeclarativeContent`.
 
     Futures results are set to the found/created :class:`~pulpcore.plugin.models.Content`.
+
+    This is useful when data downloaded from the plugin API needs to be parsed by FirstStage to
+    create additional :class:`~pulpcore.plugin.stages.DeclarativeContent` objects to be send down
+    the pipeline. Consider an example where content type `Foo` references additional instances of a
+    different content type `Bar`. Consider this code in FirstStage::
+
+        # Create d_content and d_artifact for a `foo_a`
+        foo_a = DeclarativeContent(...)
+        foo_a_future = foo_a.get_future()  # This is awaitable
+
+        ...
+
+        foo_a_content = await foo_a_future  # awaits until the foo_a reaches this stage
+
+    This creates a "looping" pattern, of sorts, where downloaded content at the end of the pipeline
+    can introduce new additional to-be-downloaded content at the beginning of the pipeline.
     """
 
     async def run(self):
