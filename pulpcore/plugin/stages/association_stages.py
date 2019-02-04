@@ -5,13 +5,13 @@ from pulpcore.plugin.models import Content, ProgressBar
 from .api import Stage
 
 
-class ContentUnitAssociation(Stage):
+class ContentAssociation(Stage):
     """
     A Stages API stage that associates content units with `new_version`.
 
     This stage stores all content unit primary keys in memory before running. This is done to
-    compute the units already associated but not received from `in_q`. These units are passed via
-    `out_q` to the next stage as a :class:`django.db.models.query.QuerySet`.
+    compute the units already associated but not received from `self._in_q`. These units are passed
+    via `self._out_q` to the next stage as a :class:`django.db.models.query.QuerySet`.
 
     This stage creates a ProgressBar named 'Associating Content' that counts the number of units
     associated. Since it's a stream the total count isn't known until it's finished.
@@ -27,30 +27,22 @@ class ContentUnitAssociation(Stage):
         super().__init__(*args, **kwargs)
         self.new_version = new_version
 
-    async def __call__(self, in_q, out_q):
+    async def run(self):
         """
         The coroutine for this stage.
-
-        Args:
-            in_q (:class:`asyncio.Queue`): Each item is a
-                :class:`~pulpcore.plugin.stages.DeclarativeContent` with saved `content` that needs
-                to be associated.
-            out_q (:class:`asyncio.Queue`): Each item is a :class:`django.db.models.query.QuerySet`
-                of :class:`~pulpcore.plugin.models.Content` class that are already associated but
-                not included in the stream of items from `in_q`.
 
         Returns:
             The coroutine for this stage.
         """
         with ProgressBar(message='Associating Content') as pb:
             to_delete = set(self.new_version.content.values_list('pk', flat=True))
-            async for batch in self.batches(in_q):
+            async for batch in self.batches():
                 to_add = set()
-                for declarative_content in batch:
+                for d_content in batch:
                     try:
-                        to_delete.remove(declarative_content.content.pk)
+                        to_delete.remove(d_content.content.pk)
                     except KeyError:
-                        to_add.add(declarative_content.content.pk)
+                        to_add.add(d_content.content.pk)
 
                 if to_add:
                     self.new_version.add_content(Content.objects.filter(pk__in=to_add))
@@ -58,11 +50,10 @@ class ContentUnitAssociation(Stage):
                     pb.save()
 
             if to_delete:
-                await out_q.put(Content.objects.filter(pk__in=to_delete))
-            await out_q.put(None)
+                await self.put(Content.objects.filter(pk__in=to_delete))
 
 
-class ContentUnitUnassociation(Stage):
+class ContentUnassociation(Stage):
     """
     A Stages API stage that unassociates content units from `new_version`.
 
@@ -80,38 +71,20 @@ class ContentUnitUnassociation(Stage):
         super().__init__(*args, **kwargs)
         self.new_version = new_version
 
-    async def __call__(self, in_q, out_q):
+    async def run(self):
         """
         The coroutine for this stage.
-
-        Args:
-            in_q (:class:`asyncio.Queue`): Each item is a
-                :class:`django.db.models.query.QuerySet` of
-                :class:`~pulpcore.plugin.models.Content` subclass that are already associated
-                but not included in the stream of items from `in_q`. One
-                :class:`django.db.models.query.QuerySet` is put for each
-                :class:`~pulpcore.plugin.models.Content` type.
-            out_q (:class:`asyncio.Queue`): Each item is a
-                :class:`django.db.models.query.QuerySet` of
-                :class:`~pulpcore.plugin.models.Content` subclass that were unassociated. One
-                :class:`django.db.models.query.QuerySet` is put for each
-                :class:`~pulpcore.plugin.models.Content` type.
 
         Returns:
             The coroutine for this stage.
         """
         with ProgressBar(message='Un-Associating Content') as pb:
-            while True:
-                queryset_to_unassociate = await in_q.get()
-                if queryset_to_unassociate is None:
-                    break
-
+            async for queryset_to_unassociate in self.items():
                 self.new_version.remove_content(queryset_to_unassociate)
                 pb.done = pb.done + queryset_to_unassociate.count()
                 pb.save()
 
-                await out_q.put(queryset_to_unassociate)
-            await out_q.put(None)
+                await self.put(queryset_to_unassociate)
 
 
 class RemoveDuplicates(Stage):
@@ -119,7 +92,6 @@ class RemoveDuplicates(Stage):
     Stage allows plugins to remove content that would break repository uniqueness constraints.
 
     This stage is expected to be added by the DeclarativeVersion. See that class for example usage.
-
     """
 
     def __init__(self, new_version, model, field_names):
@@ -136,32 +108,25 @@ class RemoveDuplicates(Stage):
         self.model = model
         self.field_names = field_names
 
-    async def __call__(self, in_q, out_q):
+    async def run(self):
         """
         The coroutine for this stage.
-
-        Args:
-            in_q (:class:`asyncio.Queue`): The queue to receive
-                :class:`~pulpcore.plugin.stages.DeclarativeContent` objects from.
-            out_q (:class:`asyncio.Queue`): The queue to put
-                :class:`~pulpcore.plugin.stages.DeclarativeContent` into.
 
         Returns:
             The coroutine for this stage.
         """
         rm_q = Q()
-        async for batch in self.batches(in_q):
-            for declarative_content in batch:
-                if isinstance(declarative_content.content, self.model):
-                    unit_q_dict = {field: getattr(declarative_content.content, field)
+        async for batch in self.batches():
+            for d_content in batch:
+                if isinstance(d_content.content, self.model):
+                    unit_q_dict = {field: getattr(d_content.content, field)
                                    for field in self.field_names}
                     # Don't remove *this* object if it is already in the repository version.
-                    not_this = ~Q(pk=declarative_content.content.pk)
+                    not_this = ~Q(pk=d_content.content.pk)
                     dupe = Q(**unit_q_dict)
                     rm_q |= Q(dupe & not_this)
             queryset_to_unassociate = self.model.objects.filter(rm_q)
             self.new_version.remove_content(queryset_to_unassociate)
 
-            for declarative_content in batch:
-                await out_q.put(declarative_content)
-        await out_q.put(None)
+            for d_content in batch:
+                await self.put(d_content)

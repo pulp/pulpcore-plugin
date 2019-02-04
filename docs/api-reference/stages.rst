@@ -60,11 +60,11 @@ Artifact Related Stages
 Content Related Stages
 ^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: pulpcore.plugin.stages.ContentUnitSaver
+.. autoclass:: pulpcore.plugin.stages.ContentSaver
    :special-members: __call__
    :private-members: _pre_save, _post_save
 
-.. autoclass:: pulpcore.plugin.stages.QueryExistingContentUnits
+.. autoclass:: pulpcore.plugin.stages.QueryExistingContents
    :special-members: __call__
 
 
@@ -73,9 +73,9 @@ Content Related Stages
 Content Association and Unassociation Stages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: pulpcore.plugin.stages.ContentUnitAssociation
+.. autoclass:: pulpcore.plugin.stages.ContentAssociation
    :special-members: __call__
 
-.. autoclass:: pulpcore.plugin.stages.ContentUnitUnassociation
+.. autoclass:: pulpcore.plugin.stages.ContentUnassociation
    :special-members: __call__
 
