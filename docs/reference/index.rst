@@ -11,5 +11,6 @@ This section includes in-depth material that is topic specific.
    error-handling
    how-to-doc-api
    live-api
+   lazy-support
    releasing
 
