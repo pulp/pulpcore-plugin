@@ -67,6 +67,9 @@ Content Related Stages
 .. autoclass:: pulpcore.plugin.stages.QueryExistingContents
    :special-members: __call__
 
+.. autoclass:: pulpcore.plugin.stages.ResolveContentFutures
+   :special-members: __call__
+
 
 .. _content-association-stages:
 

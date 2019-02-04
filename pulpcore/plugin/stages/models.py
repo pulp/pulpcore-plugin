@@ -97,7 +97,8 @@ class DeclarativeContent:
         extra_data (dict): A dictionary available for additional data to be stored in.
         future (:class:`~asyncio.Future`): A future that gets resolved to the
             :class:`~pulpcore.plugin.models.Content` in the
-            :class:`~pulpcore.plugin.stages.ResolveContentFutures` stage.
+            :class:`~pulpcore.plugin.stages.ResolveContentFutures` stage. See the
+            :class:`~pulpcore.plugin.stages.ResolveContentFutures` stage for example usage.
 
     Raises:
         ValueError: If `content` is not specified.
@@ -116,6 +117,8 @@ class DeclarativeContent:
     def get_future(self):
         """
         Return the existing or a new future.
+
+        See the :class:`~pulpcore.plugin.stages.ResolveContentFutures` stage for example usage.
 
         Returns:
             An existing :class:`asyncio.Future` or a newly created one.
