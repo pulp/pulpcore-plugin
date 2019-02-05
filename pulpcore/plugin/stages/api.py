@@ -1,9 +1,14 @@
 import asyncio
+import logging
+
 from gettext import gettext as _
 
 from django.conf import settings
 
 from .profiler import ProfilingQueue
+
+
+log = logging.getLogger(__name__)
 
 
 class Stage:
@@ -18,6 +23,13 @@ class Stage:
         self._out_q = None
 
     def _connect(self, in_q, out_q):
+        """
+        Connect to queues within a pipeline.
+
+        Args:
+            in_q (asyncio.Queue): The stage input queue.
+            out_q (asyncio.Queue): The stage output queue.
+        """
         self._in_q = in_q
         self._out_q = out_q
 
@@ -27,8 +39,10 @@ class Stage:
 
         It calls :meth:`run` and signals the next stage that its work is finished.
         """
+        log.debug(_('%(name)s - begin.'), {'name': self})
         await self.run()
         await self._out_q.put(None)
+        log.debug(_('%(name)s - put end-marker.'), {'name': self})
 
     async def run(self):
         """
@@ -64,6 +78,7 @@ class Stage:
             content = await self._in_q.get()
             if content is None:
                 break
+            log.debug(_('%(name)s - next: %(content)s.'), {'name': self, 'content': content})
             yield content
 
     async def batches(self, minsize=50):
@@ -99,6 +114,7 @@ class Stage:
             nonlocal shutdown
             if content is None:
                 shutdown = True
+                log.debug(_('%(name)s - shutdown.'), {'name': self})
             else:
                 batch.append(content)
 
@@ -114,6 +130,12 @@ class Stage:
                     add_to_batch(content)
 
             if batch and (len(batch) >= minsize or shutdown):
+                log.debug(
+                    _('%(name)s - next batch[%(length)d].'),
+                    {
+                        'name': self,
+                        'length': len(batch),
+                    })
                 yield batch
                 batch = []
 
@@ -123,8 +145,17 @@ class Stage:
 
         Args:
             item: A handled instance of :class:`pulpcore.plugin.stages.DeclarativeContent`
+
+        Raises:
+            ValueError: When `item` is None.
         """
+        if item is None:
+            raise ValueError(_('(None) not permitted.'))
         await self._out_q.put(item)
+        log.debug(_('%(name)s - put: %(content)s'), {'name': self, 'content': item})
+
+    def __str__(self):
+        return '[{id}] {name}'.format(id=id(self), name=self.__class__.__name__)
 
 
 async def create_pipeline(stages, maxsize=100):
@@ -148,10 +179,16 @@ async def create_pipeline(stages, maxsize=100):
 
     Returns:
         A single coroutine that can be used to run, wait, or cancel the entire pipeline with.
+    Raises:
+        ValueError: When a stage instance is specified more than once.
     """
     futures = []
+    history = set()
     in_q = None
     for i, stage in enumerate(stages):
+        if stage in history:
+            raise ValueError(_('Each stage instance must be unique.'))
+        history.add(stage)
         if i < len(stages) - 1:
             if settings.PROFILE_STAGES_API:
                 out_q = ProfilingQueue.make_and_record_queue(stages[i + 1], i + 1, maxsize)

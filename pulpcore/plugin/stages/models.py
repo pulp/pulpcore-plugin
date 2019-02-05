@@ -127,3 +127,6 @@ class DeclarativeContent:
             # If on 3.7, we could preferrably use get_running_loop()
             self.future = asyncio.get_event_loop().create_future()
         return self.future
+
+    def __str__(self):
+        return str(self.content.__class__.__name__)
