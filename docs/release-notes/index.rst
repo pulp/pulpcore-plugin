@@ -13,7 +13,7 @@ See :doc:`Plugin API <../index>` and
 0.1.0b19
 ========
 
-* `List of plugin API related changes in beta 19 <https://github.com/pulp/pulpcore-plugin/pulls?utf8=%E2%9C%93&q=is%3Aclosed+merged%3A2019-02-14T15%3A30%3A00-06%3A00..2019-02-05T17%3A00%3A00-06%3A00+>`_
+* `List of plugin API related changes in beta 19 <https://github.com/pulp/pulpcore-plugin/pulls?utf8=%E2%9C%93&q=is%3Aclosed+merged%3A2019-02-04T15%3A30%3A00-06%3A00..2019-02-05T17%3A15%3A00-06%3A00+>`_
 
 0.1.0b18
 ========
