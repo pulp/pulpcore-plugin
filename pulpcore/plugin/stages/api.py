@@ -230,6 +230,11 @@ class EndStage(Stage):
     """
 
     async def __call__(self):
+        """
+        This method drains items from the last queue and drops them.
+
+        Importantly it does not try to put items into the nonexistent next queue.
+        """
         # We overwrite __call__ here to avoid trying to put None in `self._out_q`.
         async for _ in self.items():  # noqa
             pass

@@ -3,7 +3,7 @@ Adding and Removing Content
 
 For adding and removing content, Pulp 3 provides a layered plugin API. The docs below explain our
 lower level API; this information is helpful to understand how a synchronize task works under the
-hood. **For implementation, it is highly recommended to use** :ref:`stages-docs` **instead**.
+hood.
 
 Repository Versions
 -------------------
@@ -32,6 +32,10 @@ working directory setup, and database cleanup after encountering failures.
 
 Synchronizing
 -------------
+
+.. tip::
+
+    Please consider using the high level :ref:`stages-docs` for actual implementations.
 
 Most plugins will define a synchronize task, which fetches content from a remote repository, and
 adds it to a Pulp repository.
