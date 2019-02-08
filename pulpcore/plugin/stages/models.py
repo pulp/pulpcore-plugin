@@ -95,6 +95,8 @@ class DeclarativeContent:
         d_artifacts (list): A list of zero or more
             :class:`~pulpcore.plugin.stages.DeclarativeArtifact` objects associated with `content`.
         extra_data (dict): A dictionary available for additional data to be stored in.
+        does_batch (bool): If `False`, prevent batching mechanism to block this item.
+            Defaults to `True`.
         future (:class:`~asyncio.Future`): A future that gets resolved to the
             :class:`~pulpcore.plugin.models.Content` in the
             :class:`~pulpcore.plugin.stages.ResolveContentFutures` stage. See the
@@ -104,20 +106,23 @@ class DeclarativeContent:
         ValueError: If `content` is not specified.
     """
 
-    __slots__ = ('content', 'd_artifacts', 'extra_data', 'future')
+    __slots__ = ('content', 'd_artifacts', 'extra_data', 'does_batch', 'future')
 
-    def __init__(self, content=None, d_artifacts=None, extra_data=None):
+    def __init__(self, content=None, d_artifacts=None, extra_data=None, does_batch=True):
         if not content:
             raise ValueError(_("DeclarativeContent must have a 'content'"))
         self.content = content
         self.d_artifacts = d_artifacts or []
         self.extra_data = extra_data or {}
+        self.does_batch = does_batch
         self.future = None
 
-    def get_future(self):
+    def get_or_create_future(self):
         """
         Return the existing or a new future.
 
+        If you rely on this future in a the course of the pipeline, consider clearing the
+        `does_batch` attribute to prevent deadlocks.
         See the :class:`~pulpcore.plugin.stages.ResolveContentFutures` stage for example usage.
 
         Returns:
