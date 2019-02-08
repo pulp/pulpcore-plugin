@@ -10,97 +10,96 @@ The Plugin API currently supports version 3.y of Pulp Core.
 See :doc:`Plugin API <../index>` and
 :doc:`Plugin Development <../plugin-writer/index>`.
 
+
+0.1.0b20
+========
+
+* `List of plugin API related changes in beta 20 <https://github.com/pulp/pulpcore-plugin/compare/0.1.0b19...0.1.0b20>`_
+
 0.1.0b19
 ========
 
-* `List of plugin API related changes in beta 19 <https://github.com/pulp/pulpcore-plugin/pulls?utf8=%E2%9C%93&q=is%3Aclosed+merged%3A2019-02-04T15%3A30%3A00-06%3A00..2019-02-05T17%3A15%3A00-06%3A00+>`_
+* `List of plugin API related changes in beta 19 <https://github.com/pulp/pulpcore-plugin/compare/0.1.0b18...0.1.0b19>`_
 
 0.1.0b18
 ========
 
-* `List of plugin API related changes in beta 18 <https://github.com/pulp/pulpcore-plugin/pulls?utf8=%E2%9C%93&q=is%3Aclosed+merged%3A2019-01-15T14%3A10%3A00-06%3A00..2019-02-04T15%3A30%3A00-06%3A00+>`_
-
+* `List of plugin API related changes in beta 18 <https://github.com/pulp/pulpcore-plugin/compare/0.1.0b17...0.1.0b28>`_
 
 0.1.0b17
 ========
 
-* `List of plugin API related changes in beta 17 <https://github.com/pulp/pulpcore-plugin/pulls?utf8=%E2%9C%93&q=is%3Aclosed+merged%3A2018-12-20T15%3A00%3A00-06%3A00..2019-01-15T14%3A10%3A00-06%3A00+>`_
+* `List of plugin API related changes in beta 17 <https://github.com/pulp/pulpcore-plugin/compare/0.1.0b16...0.1.0b17>`_
 
 0.1.0b16
 ========
 
-* `List of plugin API related changes in beta 16 <https://github.com/pulp/pulpcore-plugin/pulls?utf8=%E2%9C%93&q=is%3Aclosed+merged%3A2018-12-18T10%3A00%3A00-06%3A00..2018-12-20T14%3A10%3A00-06%3A00+>`_
+* `List of plugin API related changes in beta 16 <https://github.com/pulp/pulpcore-plugin/compare/0.1.0b15...0.1.0b16>`_
 
 0.1.0b15
 ========
 
-* `List of plugin API related changes in beta 15 <https://github.com/pulp/pulpcore-plugin/pulls?utf8=%E2%9C%93&q=is%3Aclosed+merged%3A2018-11-29T14%3A00%3A00-04%3A00..2018-12-18T10%3A10%3A00-06%3A00+>`_
+* `List of plugin API related changes in beta 15 <https://github.com/pulp/pulpcore-plugin/compare/pulpcore-plugin-0.1.0b14...0.1.0b15>`_
 
 0.1.0b14
 ========
 
-* `List of plugin API related changes in beta 14 <https://github.com/pulp/pulp/pulls?utf8=%E2%9C%93&q=label%3A3.0+label%3Aplugin-writer+is%3Aclosed+merged%3A2018-11-21T13%3A00%3A00-04%3A00..2018-11-29T14%3A10%3A00-06%3A00+>`_
-
+* `List of plugin API related changes in beta 14 <https://github.com/pulp/pulpcore-plugin/compare/pulpcore-plugin-0.1.0b13...pulpcore-plugin-0.1.0b14>`_
 
 0.1.0b13
 ========
 
-* `List of plugin API related changes in beta 13 <https://github.com/pulp/pulp/pulls?utf8=%E2%9C%93&q=label%3A3.0+label%3Aplugin-writer+is%3Aclosed+merged%3A2018-11-15T16%3A30%3A00-06%3A00..2018-11-21T13%3A00%3A00-04%3A00+>`_
-
+* `List of plugin API related changes in beta 13 <https://github.com/pulp/pulpcore-plugin/compare/pulpcore-plugin-0.1.0b12...pulpcore-plugin-0.1.0b13>`_
 
 0.1.0b12
 ========
 
-* `List of plugin API related changes in beta 12 <https://github.com/pulp/pulp/pulls?utf8=%E2%9C%93&q=label%3A3.0+label%3Aplugin-writer+is%3Aclosed+merged%3A2018-10-11T15%3A00%3A00-04%3A00..2018-11-15T16%3A30%3A00-06%3A00+>`_
+* `List of plugin API related changes in beta 12 <https://github.com/pulp/pulpcore-plugin/compare/pulpcore-plugin-0.1.0b11...pulpcore-plugin-0.1.0b12>`_
 
 0.1.0b11
 ========
 
-* `List of plugin API related changes in beta 11 <https://github.com/pulp/pulp/pulls?utf8=%E2%9C%93&q=label%3A3.0+label%3Aplugin-writer+is%3Aclosed+merged%3A2018-10-05T13%3A30%3A00-06%3A00..2018-10-11T15%3A00%3A00-04%3A00+>`_
+* `List of plugin API related changes in beta 11 <https://github.com/pulp/pulpcore-plugin/compare/pulpcore-plugin-0.1.0b10...pulpcore-plugin-0.1.0b11>`_
 
 0.1.0b10
 ========
 
-* `List of plugin API related changes in beta 10 <https://github.com/pulp/pulp/pulls?utf8=%E2%9C%93&q=label%3A3.0+label%3Aplugin-writer+is%3Aclosed+merged%3A2018-10-01T01%3A30%3A00-06%3A00..2018-10-05T13%3A30%3A00-06%3A00+>`_
+* `List of plugin API related changes in beta 10 <https://github.com/pulp/pulpcore-plugin/compare/pulpcore-plugin-0.1.0b9...pulpcore-plugin-0.1.0b10>`_
 
 0.1.0b9
 =======
 
-* `Expose NamedModelViewSet to plugins <https://github.com/pulp/pulp/pull/3681>`_
+* `List of plugin API related changes in beta 9 <https://github.com/pulp/pulpcore-plugin/compare/pulpcore-plugin-0.1.0b8...pulpcore-plugin-0.1.0b9>`_
 
 0.1.0b8
 =======
 
-* `Problem: Distribution is not available as an abstract model <https://github.com/pulp/pulp/pull/3675>`_
+* `List of plugin API related changes in beta 8 <https://github.com/pulp/pulpcore-plugin/compare/pulpcore-plugin-0.1.0b7...pulpcore-plugin-0.1.0b8>`_
 
 0.1.0b7
 =======
 
-* `Add ContentGuard model, serializer and viewset <https://github.com/pulp/pulp/pull/3666>`_
-* `Allow simpler pipeline customization in DeclarativeVersion <https://github.com/pulp/pulp/pull/3664>`_
-* `Artifact is compatible with bulk_create() <https://github.com/pulp/pulp/pull/3660>`_
-* `Add async batches iterator <https://github.com/pulp/pulp/pull/3643>`_
+* `List of plugin API related changes in beta 7 <https://github.com/pulp/pulpcore-plugin/compare/pulpcore-plugin-0.1.0b6...pulpcore-plugin-0.1.0b7>`_
 
 0.1.0b6
 =======
 
-* `Multi-Artifact Content units work now <https://github.com/pulp/pulp/pull/3628>`_
+* `List of plugin API related changes in beta 6 <https://github.com/pulp/pulpcore-plugin/compare/pulpcore-plugin-0.0.1b5...pulpcore-plugin-0.1.0b6>`_
 
 0.1.0b5
 =======
 
-* `Addition of the Stages API <https://github.com/pulp/pulp/pull/3559>`_
-* `Removal of GroupDownloader <https://github.com/pulp/pulp/pull/3606>`_
+* `List of plugin API related changes in beta 5 <https://github.com/pulp/pulpcore-plugin/compare/pulpcore-plugin-0.1.0b4...pulpcore-plugin-0.0.1b5>`_
 
 0.1.0b4
 =======
 
-* `Use querysets for add/remove_content methods <https://github.com/pulp/pulp/pull/3548>`_
+* `List of plugin API related changes in beta 4 <https://github.com/pulp/pulpcore-plugin/compare/pulpcore-plugin-0.1.0b3...pulpcore-plugin-0.1.0b4>`_
 
 0.1.0b3
 =======
 
-* Relax dependency pinning to pulpcore
+* `List of plugin API related changes in beta 3 <https://github.com/pulp/pulpcore-plugin/compare/pulpcore-plugin-0.1.0b2...pulpcore-plugin-0.1.0b3>`_
 
 0.1.0b2
 =======
