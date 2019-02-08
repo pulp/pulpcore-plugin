@@ -1,4 +1,5 @@
 from gettext import gettext as _
+from os import path
 
 from pulpcore.app.models import Artifact as PlatformArtifact
 from pulpcore.app.models import Remote as PlatformRemote
@@ -85,3 +86,38 @@ class Remote(PlatformRemote):
             if remote_artifact.size:
                 kwargs['expected_size'] = remote_artifact.size
         return self.download_factory.build(url, **kwargs)
+
+    def get_remote_artifact_url(self, relative_path=None):
+        """
+        Get the full URL for a RemoteArtifact from a relative path.
+
+        This method returns the URL for a RemoteArtifact by concatinating the Remote's url and the
+        relative path.located in the Remote. Plugin writers are expected to override this method
+        when a more complex algorithm is needed to determine the full URL.
+
+        Args:
+            relative_path (str): The relative path of a RemoteArtifact
+
+        Raises:
+            ValueError: If relative_path starts with a '/'.
+
+        Returns:
+            str: A URL for a RemoteArtifact available at the Remote.
+        """
+        if path.isabs(relative_path):
+            raise ValueError(_("Relative path can't start with '/'. {0}").format(relative_path))
+        return path.join(self.url, relative_path)
+
+    def get_remote_artifact_content_type(self, relative_path=None):
+        """
+        Get the type of content that should be available at the relative path.
+
+        Plugin writers are expected to implement this method.
+
+        Args:
+            relative_path (str): The relative path of a RemoteArtifact
+
+        Returns:
+            Class: The Class of the content type that should be available at the relative path.
+        """
+        raise NotImplementedError()
