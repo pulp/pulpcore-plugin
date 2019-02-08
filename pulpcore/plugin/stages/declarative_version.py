@@ -4,7 +4,12 @@ from pulpcore.plugin.models import RepositoryVersion
 from pulpcore.plugin.tasking import WorkingDirectory
 
 from .api import create_pipeline, EndStage
-from .artifact_stages import ArtifactDownloader, ArtifactSaver, QueryExistingArtifacts
+from .artifact_stages import (
+    ArtifactDownloader,
+    ArtifactSaver,
+    QueryExistingArtifacts,
+    RemoteArtifactSaver,
+)
 from .association_stages import ContentAssociation, ContentUnassociation, RemoveDuplicates
 from .content_stages import ContentSaver, QueryExistingContents, ResolveContentFutures
 
@@ -127,8 +132,18 @@ class DeclarativeVersion:
         """
         pipeline = [self.first_stage]
         if self.download_artifacts:
-            pipeline.extend([QueryExistingArtifacts(), ArtifactDownloader(), ArtifactSaver()])
-        pipeline.extend([QueryExistingContents(), ContentSaver(), ResolveContentFutures()])
+            pipeline.extend([
+                QueryExistingArtifacts(),
+                ArtifactDownloader(),
+                ArtifactSaver(),
+            ])
+        pipeline.extend([
+            QueryExistingContents(),
+            ContentSaver(),
+            ResolveContentFutures(),
+            RemoteArtifactSaver(),
+            ResolveContentFutures(),
+        ])
         for dupe_query_dict in self.remove_duplicates:
             pipeline.extend([RemoveDuplicates(new_version, **dupe_query_dict)])
 

@@ -52,6 +52,9 @@ Artifact Related Stages
 .. autoclass:: pulpcore.plugin.stages.ArtifactSaver
    :special-members: __call__
 
+.. autoclass:: pulpcore.plugin.stages.RemoteArtifactSaver
+   :special-members: __call__
+
 .. autoclass:: pulpcore.plugin.stages.QueryExistingArtifacts
    :special-members: __call__
 

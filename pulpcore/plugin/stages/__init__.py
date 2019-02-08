@@ -1,5 +1,10 @@
 from .api import create_pipeline, EndStage, Stage  # noqa
-from .artifact_stages import ArtifactDownloader, ArtifactSaver, QueryExistingArtifacts  # noqa
+from .artifact_stages import (  # noqa
+    ArtifactDownloader,
+    ArtifactSaver,
+    QueryExistingArtifacts,
+    RemoteArtifactSaver,
+)
 from .association_stages import (  # noqa
     ContentAssociation,
     ContentUnassociation,

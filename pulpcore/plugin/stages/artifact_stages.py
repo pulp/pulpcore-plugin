@@ -3,7 +3,7 @@ import logging
 
 from django.db.models import Q
 
-from pulpcore.plugin.models import Artifact, ProgressBar
+from pulpcore.plugin.models import Artifact, ContentArtifact, ProgressBar, RemoteArtifact
 
 from .api import Stage
 
@@ -195,3 +195,102 @@ class ArtifactSaver(Stage):
 
             for d_content in batch:
                 await self.put(d_content)
+
+
+class RemoteArtifactSaver(Stage):
+    """
+    A Stage that saves :class:`~pulpcore.plugin.models.RemoteArtifact` objects
+
+    An :class:`~pulpcore.plugin.models.RemoteArtifact` object is saved for each
+    :class:`~pulpcore.plugin.stages.DeclarativeArtifact`.
+    """
+
+    async def run(self):
+        """
+        The coroutine for this stage.
+
+        Returns:
+            The coroutine for this stage.
+        """
+        async for batch in self.batches():
+            RemoteArtifact.objects.bulk_get_or_create(self._needed_remote_artifacts(batch))
+            for d_content in batch:
+                await self.put(d_content)
+
+    @staticmethod
+    def _declared_remote_artifacts(batch):
+        """
+        Build a generator of "declared" :class:`~pulpcore.plugin.models.RemoteArtifact` to
+        be created for the batch.
+
+        Each RemoteArtifact corresponds to a :class:`~pulpcore.plugin.stages.DeclarativeArtifact`
+        associated with a :class:`~pulpcore.plugin.stages.DeclarativeContent` in the batch.
+
+        Args:
+            batch (list): List of :class:`~pulpcore.plugin.stages.DeclarativeContent`.
+
+        Returns:
+            Iterable: Of :class:`~pulpcore.plugin.models.RemoteArtifact`.
+        """
+        artifact_mapping = {}
+        for d_content in batch:
+            for d_artifact in d_content.d_artifacts:
+                key = (
+                    d_content.content.pk,
+                    d_artifact.relative_path
+                )
+                artifact_mapping[key] = d_artifact
+        for content_artifact in ContentArtifact.objects.filter(
+                content__in=(dc.content for dc in batch)):
+            key = (
+                content_artifact.content.pk,
+                content_artifact.relative_path
+            )
+            d_artifact = artifact_mapping[key]
+            remote_artifact = RemoteArtifact(
+                url=d_artifact.url,
+                size=d_artifact.artifact.size,
+                md5=d_artifact.artifact.md5,
+                sha1=d_artifact.artifact.sha1,
+                sha224=d_artifact.artifact.sha224,
+                sha256=d_artifact.artifact.sha256,
+                sha384=d_artifact.artifact.sha384,
+                sha512=d_artifact.artifact.sha512,
+                content_artifact=content_artifact,
+                remote=d_artifact.remote
+            )
+            yield remote_artifact
+
+    def _needed_remote_artifacts(self, batch):
+        """
+        Build a generator of only :class:`~pulpcore.plugin.models.RemoteArtifact` that need
+        to be created for the batch.
+
+        Args:
+            batch (list): List of :class:`~pulpcore.plugin.stages.DeclarativeContent`.
+
+        Returns:
+            Iterable: Of :class:`~pulpcore.plugin.models.RemoteArtifact`.
+        """
+        q = Q(pk=None)
+        existing = set()
+        for d_content in batch:
+            for content_artifact in ContentArtifact.objects.filter(content=d_content.content):
+                q |= Q(
+                    content_artifact=content_artifact,
+                    remote__in=(a.remote for a in d_content.d_artifacts)
+                )
+        for remote_artifact in RemoteArtifact.objects.filter(q):
+            key = (
+                remote_artifact.remote.pk,
+                remote_artifact.content_artifact.pk
+            )
+            existing.add(key)
+        for remote_artifact in self._declared_remote_artifacts(batch):
+            key = (
+                remote_artifact.remote.pk,
+                remote_artifact.content_artifact.pk
+            )
+            if key in existing:
+                continue
+            yield remote_artifact
