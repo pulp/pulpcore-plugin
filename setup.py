@@ -14,7 +14,7 @@ setup(
     name='pulpcore-plugin',
     description='Pulp Plugin API',
     long_description=long_description,
-    version='0.1.0b19',
+    version='0.1.0b20',
     license='GPLv2+',
     packages=find_packages(exclude=['test']),
     author='Pulp Team',
