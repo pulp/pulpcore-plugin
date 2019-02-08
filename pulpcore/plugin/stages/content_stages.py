@@ -3,7 +3,7 @@ from collections import defaultdict
 from django.db import IntegrityError, transaction
 from django.db.models import Q
 
-from pulpcore.plugin.models import ContentArtifact, RemoteArtifact
+from pulpcore.plugin.models import ContentArtifact
 
 from .api import Stage
 
@@ -11,8 +11,7 @@ from .api import Stage
 class QueryExistingContents(Stage):
     """
     A Stages API stage that saves :attr:`DeclarativeContent.content` objects and saves its related
-    :class:`~pulpcore.plugin.models.ContentArtifact` and
-    :class:`~pulpcore.plugin.models.RemoteArtifact` objects too.
+    :class:`~pulpcore.plugin.models.ContentArtifact` objects too.
 
     This stage expects :class:`~pulpcore.plugin.stages.DeclarativeContent` units from `self._in_q`
     and inspects their associated :class:`~pulpcore.plugin.stages.DeclarativeArtifact` objects. Each
@@ -65,8 +64,7 @@ class QueryExistingContents(Stage):
 class ContentSaver(Stage):
     """
     A Stages API stage that saves :attr:`DeclarativeContent.content` objects and saves its related
-    :class:`~pulpcore.plugin.models.ContentArtifact` and
-    :class:`~pulpcore.plugin.models.RemoteArtifact` objects too.
+    :class:`~pulpcore.plugin.models.ContentArtifact` objects too.
 
     This stage expects :class:`~pulpcore.plugin.stages.DeclarativeContent` units from `self._in_q`
     and inspects their associated :class:`~pulpcore.plugin.stages.DeclarativeArtifact` objects. Each
@@ -74,8 +72,7 @@ class ContentSaver(Stage):
     :class:`~pulpcore.plugin.models.Artifact`.
 
     Each "unsaved" Content objects is saved and a :class:`~pulpcore.plugin.models.ContentArtifact`
-    and :class:`~pulpcore.plugin.models.RemoteArtifact` objects too. This allows Pulp to refetch the
-    Artifact in the future if the local copy is removed.
+    objects too.
 
     Each :class:`~pulpcore.plugin.stages.DeclarativeContent` is sent to after it has been handled.
 
@@ -92,9 +89,6 @@ class ContentSaver(Stage):
         """
         async for batch in self.batches():
             content_artifact_bulk = []
-            remote_artifact_bulk = []
-            remote_artifact_map = {}
-
             with transaction.atomic():
                 await self._pre_save(batch)
                 for d_content in batch:
@@ -114,36 +108,10 @@ class ContentSaver(Stage):
                                 relative_path=d_artifact.relative_path
                             )
                             content_artifact_bulk.append(content_artifact)
-                            remote_artifact_data = {
-                                'url': d_artifact.url,
-                                'size': d_artifact.artifact.size,
-                                'md5': d_artifact.artifact.md5,
-                                'sha1': d_artifact.artifact.sha1,
-                                'sha224': d_artifact.artifact.sha224,
-                                'sha256': d_artifact.artifact.sha256,
-                                'sha384': d_artifact.artifact.sha384,
-                                'sha512': d_artifact.artifact.sha512,
-                                'remote': d_artifact.remote,
-                            }
-                            rel_path = d_artifact.relative_path
-                            content_key = str(content_artifact.content.pk) + rel_path
-                            remote_artifact_map[content_key] = remote_artifact_data
-
-                for content_artifact in ContentArtifact.objects.bulk_get_or_create(
-                        content_artifact_bulk):
-                    rel_path = content_artifact.relative_path
-                    content_key = str(content_artifact.content.pk) + rel_path
-                    remote_artifact_data = remote_artifact_map.pop(content_key)
-                    new_remote_artifact = RemoteArtifact(
-                        content_artifact=content_artifact, **remote_artifact_data
-                    )
-                    remote_artifact_bulk.append(new_remote_artifact)
-
-                RemoteArtifact.objects.bulk_get_or_create(remote_artifact_bulk)
+                ContentArtifact.objects.bulk_get_or_create(content_artifact_bulk)
                 await self._post_save(batch)
-
-            for d_content in batch:
-                await self.put(d_content)
+            for declarative_content in batch:
+                await self.put(declarative_content)
 
     async def _pre_save(self, batch):
         """
