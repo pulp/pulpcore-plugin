@@ -140,7 +140,6 @@ class DeclarativeVersion:
         pipeline.extend([
             QueryExistingContents(),
             ContentSaver(),
-            ResolveContentFutures(),
             RemoteArtifactSaver(),
             ResolveContentFutures(),
         ])
