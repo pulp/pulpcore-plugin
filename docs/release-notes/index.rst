@@ -24,7 +24,7 @@ See :doc:`Plugin API <../index>` and
 0.1.0b18
 ========
 
-* `List of plugin API related changes in beta 18 <https://github.com/pulp/pulpcore-plugin/compare/0.1.0b17...0.1.0b28>`_
+* `List of plugin API related changes in beta 18 <https://github.com/pulp/pulpcore-plugin/compare/0.1.0b17...0.1.0b18>`_
 
 0.1.0b17
 ========
