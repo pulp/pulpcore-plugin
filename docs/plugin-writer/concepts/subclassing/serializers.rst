@@ -34,7 +34,7 @@ serializer needs to add that field as well.
           )
 
       class Meta:
-            fields = ContentSerializer.Meta.fields + ('relative_path',)
+            fields = SingleArtifactContentSerializer.Meta.fields + ('relative_path',)
             model = FileContent
 
 Help Text

@@ -91,7 +91,8 @@ class RemoveDuplicates(Stage):
     """
     Stage allows plugins to remove content that would break repository uniqueness constraints.
 
-    This stage is expected to be added by the DeclarativeVersion. See that class for example usage.
+    This stage is expected to be added by the
+    :class:`~pulpcore.plugin.stages.DeclarativeVersion`. See that class for example usage.
     """
 
     def __init__(self, new_version, model, field_names):

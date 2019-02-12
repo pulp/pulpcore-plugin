@@ -29,14 +29,31 @@ class DeclarativeVersion:
         The pipeline stages perform the following steps by default:
 
         1. Create the new :class:`~pulpcore.plugin.models.RepositoryVersion`
-        2. Query existing artifacts to determine which are already local to Pulp
-        3. Download any undownloaded :class:`~pulpcore.plugin.models.Artifact` objects.
-        4. Save the newly downloaded :class:`~pulpcore.plugin.models.Artifact` objects
-        5. Query for Content units already present in Pulp
-        6. Save new Content units not yet present in Pulp
-        7. Associate all content units with the new
-           :class:`~pulpcore.plugin.models.RepositoryVersion`.
-        8. Unassociate any content units not declared in the stream (only when sync_mode='mirror')
+        2. Use the provided `first_stage` to construct
+           :class:`~pulpcore.plugin.stages.DeclarativeContent`
+        3. Query existing artifacts to determine which are already local to Pulp with
+           :class:`~pulpcore.plugin.stages.QueryExistingArtifacts`
+        4. Download any undownloaded :class:`~pulpcore.plugin.models.Artifact` objects with
+           :class:`~pulpcore.plugin.stages.ArtifactDownloader`
+        5. Save the newly downloaded :class:`~pulpcore.plugin.models.Artifact` objects with
+           :class:`~pulpcore.plugin.stages.ArtifactSaver`
+        6. Query for Content units already present in Pulp with
+           :class:`~pulpcore.plugin.stages.QueryExistingContents`
+        7. Save new Content units not yet present in Pulp with
+           :class:`~pulpcore.plugin.stages.ContentSaver`
+        8. Attach :class:`~pulpcore.plugin.models.RemoteArtifact` to the
+           :class:`~pulpcore.plugin.models.Content` via
+           :class:`~pulpcore.plugin.stages.RemoteArtifactSaver`
+        9. Resolve the attached :class:`~asyncio.Future` of
+           :class:`~pulpcore.plugin.stages.DeclarativeContent` with
+           :class:`~pulpcore.plugin.stages.ResolveContentFutures`
+        10. Remove duplicate content in the repository version if `remove_duplicates` is given by
+            :class:`~pulpcore.plugin.stages.RemoveDuplicates`
+        11. Associate all content units with the new
+            :class:`~pulpcore.plugin.models.RepositoryVersion` with
+            :class:`~pulpcore.plugin.stages.ContentAssociation`
+        12. Unassociate any content units not declared in the stream (only when sync_mode='mirror')
+            with :class:`~pulpcore.plugin.stages.ContentUnassociation`
 
         To do this, the plugin writer should subclass the
         :class:`~pulpcore.plugin.stages.Stage` class and define its
