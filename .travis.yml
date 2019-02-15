@@ -7,10 +7,12 @@ python:
     - "3.6"
     - "3.7"
 env:
-  matrix:
-    - DJANGO_MAX=2.2.100 DB=postgres TEST=pulp
-    #- DJANGO_MAX=2.2.100 TEST=docs
+    - TEST=pulp
+    - TEST=docs
 matrix:
+  exclude:
+    - python: "3.6"
+      env: TEST=docs
   fast_finish: true
 addons:
     # postgres versions provided by el7 RHSCL (lowest supportable version)
