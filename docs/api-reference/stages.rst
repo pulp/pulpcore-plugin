@@ -1,4 +1,4 @@
-.. _stages-docs:
+.. _stages-api-docs:
 
 pulpcore.plugin.stages
 ======================

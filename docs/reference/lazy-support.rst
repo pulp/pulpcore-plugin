@@ -8,30 +8,40 @@ downloading their associated Artifacts. By convention, users expect the `Remote.
 determine when Artifacts will be downloaded. See the user docs for specifics on the user
 expectations there.
 
+.. _lazy-support-with-da:
+
 Adding Support when using DeclarativeVersion
 ============================================
 
-.. warning::
-
-   This section is outdated.
-
-Plugins like `pulp-file` sync content using `DeclarativeVersion`, which takes an option called
-`download_artifacts` which defaults to `True`. Lazy support can be added by specifying
-`download_artifacts=False`.
+Plugins like `pulp-file` sync content using `DeclarativeVersion`.
+Lazy support can be added by specifying `deferred_download=True` at instanciation of
+:class:`pulpcore.plugin.stages.DeclarativeArtifact`.
 
 `Remote.policy` can take several values. To easily translate them, consider a snippet like this one
 taken from `pulp-file`.::
 
-    download = (remote.policy == Remote.IMMEDIATE)  # Interpret policy to download Artifacts or not
-    dv = DeclarativeVersion(first_stage, repository, mirror=mirror, download_artifacts=download)
+    async def run(self):
+        # Interpret download policy
+        deferred_download = (self.remote.policy != Remote.IMMEDIATE)
+        <...>
+        da = DeclarativeArtifact(
+            artifact=artifact,
+            url=url,
+            relative_path=relative_path,
+            remote=self.remote,
+            deferred_download=deferred_download,
+        )
+        <...>
+
+.. hint::
+
+   The `deferred_download` flag is used at the artifact level, to support lazy concepts for
+   plugins that need some artifacts to download immediately in all cases.
+   See also :ref:`multi-level-discovery`.
 
 
 Adding Support when using a Custom Stages API Pipeline
 ======================================================
-
-.. warning::
-
-   This section is outdated.
 
 Plugins like `pulp-rpm` that sync content using a custom pipeline can enable lazy support by
 excluding the `QueryExistingArtifacts`, `ArtifactDownloader` and `ArtifactSaver` stages. Without
@@ -47,6 +57,15 @@ this one inspired by `pulp-rpm`::
         stages.extend([QueryExistingArtifacts(), ArtifactDownloader(), ArtifactSaver()])
     stages.extend(the_rest_of_the_pipeline)  # This adds the Content and Association Stages
 
+.. warning::
+
+   Skipping of those Stages does not work with :ref:`multi-level-discovery`.
+   If you need some artifacts downloaded anyway, follow the example on
+   :ref:lazy-support-with-dv` and include the artifact stages in the custom pipeline.
+
+.. hint::
+
+   Consider to also exclude the `ResolveContentFutures` stage.
 
 What if the Custom Pipeline Needs Artifact Downloading?
 =======================================================
@@ -84,7 +103,7 @@ specific Artifact path, which actually matches against a `ContentArtifact` not a
 `Artifact` exists, it is served to the client. Otherwise a `RemoteArtifact` allows the `Artifact` to
 be downloaded on-demand and served to the client.
 
-If `Remote.policy == Remote.ON_DEMAND` the Artifact is saved on the first download. This causes
+If `remote.policy == Remote.ON_DEMAND` the Artifact is saved on the first download. This causes
 future requests to serve the already-downloaded and validated Artifact.
 
 .. note::
