@@ -16,8 +16,7 @@ from .content_stages import ContentSaver, QueryExistingContents, ResolveContentF
 
 class DeclarativeVersion:
 
-    def __init__(self, first_stage, repository, mirror=True, download_artifacts=True,
-                 remove_duplicates=None):
+    def __init__(self, first_stage, repository, mirror=True, remove_duplicates=None):
         """
         A pipeline that creates a new :class:`~pulpcore.plugin.models.RepositoryVersion` from a
         stream of :class:`~pulpcore.plugin.stages.DeclarativeContent` objects.
@@ -110,10 +109,6 @@ class DeclarativeVersion:
                 :class:`~pulpcore.plugin.stages.DeclarativeVersion stream`, and does not remove any
                 pre-existing units in the :class:`~pulpcore.plugin.models.RepositoryVersion`.
                 'True' is the default.
-            download_artifacts (bool): 'True' includes Artifact downloading and saving along with
-                content unit query and saving. 'False' will only handle content units and will not
-                perform Artifact downloading and saving as part of the pipeline. 'False' is the
-                default.
             remove_duplicates (list): A list of dictionaries that indicate objects which are
                 considered duplicates within a single repository version. These objects will be
                 removed from the new version, making room for the new objects passing through the
@@ -125,15 +120,11 @@ class DeclarativeVersion:
         self.first_stage = first_stage
         self.repository = repository
         self.mirror = mirror
-        self.download_artifacts = download_artifacts
         self.remove_duplicates = remove_duplicates or []
 
     def pipeline_stages(self, new_version):
         """
         Build the list of pipeline stages feeding into the ContentAssociation stage.
-
-        If the `self.download_artifacts` is False the pipeline will not include Artifact downloading
-        and saving stages.
 
         Plugin-writers may override this method to build a custom pipeline. This
         can be achieved by returning a list with different stages or by extending
@@ -147,19 +138,16 @@ class DeclarativeVersion:
             list: List of :class:`~pulpcore.plugin.stages.Stage` instances
 
         """
-        pipeline = [self.first_stage]
-        if self.download_artifacts:
-            pipeline.extend([
-                QueryExistingArtifacts(),
-                ArtifactDownloader(),
-                ArtifactSaver(),
-            ])
-        pipeline.extend([
+        pipeline = [
+            self.first_stage,
+            QueryExistingArtifacts(),
+            ArtifactDownloader(),
+            ArtifactSaver(),
             QueryExistingContents(),
             ContentSaver(),
             RemoteArtifactSaver(),
             ResolveContentFutures(),
-        ])
+        ]
         for dupe_query_dict in self.remove_duplicates:
             pipeline.extend([RemoveDuplicates(new_version, **dupe_query_dict)])
 

@@ -11,6 +11,10 @@ expectations there.
 Adding Support when using DeclarativeVersion
 ============================================
 
+.. warning::
+
+   This section is outdated.
+
 Plugins like `pulp-file` sync content using `DeclarativeVersion`, which takes an option called
 `download_artifacts` which defaults to `True`. Lazy support can be added by specifying
 `download_artifacts=False`.
@@ -24,6 +28,10 @@ taken from `pulp-file`.::
 
 Adding Support when using a Custom Stages API Pipeline
 ======================================================
+
+.. warning::
+
+   This section is outdated.
 
 Plugins like `pulp-rpm` that sync content using a custom pipeline can enable lazy support by
 excluding the `QueryExistingArtifacts`, `ArtifactDownloader` and `ArtifactSaver` stages. Without
