@@ -76,7 +76,7 @@ this is accomplished.
             # This is how non-crud validation is accomplished
             serializer.is_valid(raise_exception=True)
             repository = serializer.validated_data.get('repository')
-            mirror = serializer.validated_data.get('mirror', True)
+            mirror = serializer.validated_data.get('mirror', False)
 
             # This is how tasks are kicked off.
             result = enqueue_with_reservation(

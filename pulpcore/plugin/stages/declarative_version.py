@@ -16,7 +16,7 @@ from .content_stages import ContentSaver, QueryExistingContents, ResolveContentF
 
 class DeclarativeVersion:
 
-    def __init__(self, first_stage, repository, mirror=True, remove_duplicates=None):
+    def __init__(self, first_stage, repository, mirror=False, remove_duplicates=None):
         """
         A pipeline that creates a new :class:`~pulpcore.plugin.models.RepositoryVersion` from a
         stream of :class:`~pulpcore.plugin.stages.DeclarativeContent` objects.
@@ -51,7 +51,7 @@ class DeclarativeVersion:
         11. Associate all content units with the new
             :class:`~pulpcore.plugin.models.RepositoryVersion` with
             :class:`~pulpcore.plugin.stages.ContentAssociation`
-        12. Unassociate any content units not declared in the stream (only when sync_mode='mirror')
+        12. Unassociate any content units not declared in the stream (only when mirror=True)
             with :class:`~pulpcore.plugin.stages.ContentUnassociation`
 
         To do this, the plugin writer should subclass the
@@ -108,7 +108,7 @@ class DeclarativeVersion:
                 'False' (additive) only adds content units observed in the
                 :class:`~pulpcore.plugin.stages.DeclarativeVersion stream`, and does not remove any
                 pre-existing units in the :class:`~pulpcore.plugin.models.RepositoryVersion`.
-                'True' is the default.
+                'False' is the default.
             remove_duplicates (list): A list of dictionaries that indicate objects which are
                 considered duplicates within a single repository version. These objects will be
                 removed from the new version, making room for the new objects passing through the
