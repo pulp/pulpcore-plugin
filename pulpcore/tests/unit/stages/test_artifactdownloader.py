@@ -2,6 +2,7 @@ import asyncio
 
 import asynctest
 from unittest import mock
+from uuid import uuid4
 
 from pulpcore.plugin.stages import DeclarativeContent, DeclarativeArtifact
 from pulpcore.plugin.stages.artifact_stages import ArtifactDownloader
@@ -85,7 +86,8 @@ class TestArtifactDownloader(asynctest.ClockedTestCase):
         das = []
         for delay in delays:
             artifact = mock.Mock()
-            artifact.pk = True if delay is None else None
+            artifact.pk = uuid4()
+            artifact._state.adding = delay is not None
             artifact.DIGEST_FIELDS = []
             remote = mock.Mock()
             remote.get_downloader = DownloaderMock

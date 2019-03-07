@@ -1,4 +1,5 @@
 from collections import defaultdict
+from gettext import gettext as _
 
 from django.db import IntegrityError, transaction
 from django.db.models import Q
@@ -37,7 +38,7 @@ class QueryExistingContents(Stage):
             The coroutine for this stage.
         """
         async for batch in self.batches():
-            content_q_by_type = defaultdict(lambda: Q(pk=None))
+            content_q_by_type = defaultdict(lambda: Q(_created=None))
             for d_content in batch:
                 model_type = type(d_content.content)
                 unit_q = d_content.content.q()
@@ -92,7 +93,9 @@ class ContentSaver(Stage):
             with transaction.atomic():
                 await self._pre_save(batch)
                 for d_content in batch:
-                    if d_content.content.pk is None:
+                    # Are we saving to the database for the first time?
+                    content_already_saved = not d_content.content._state.adding
+                    if not content_already_saved:
                         try:
                             with transaction.atomic():
                                 d_content.content.save()
@@ -102,11 +105,17 @@ class ContentSaver(Stage):
                                     d_content.content.q())
                             continue
                         for d_artifact in d_content.d_artifacts:
-                            content_artifact = ContentArtifact(
-                                content=d_content.content,
-                                artifact=d_artifact.artifact,
-                                relative_path=d_artifact.relative_path
-                            )
+                            artifact_already_saved = not d_artifact.artifact._state.adding
+                            if artifact_already_saved:
+                                content_artifact = ContentArtifact(
+                                    content=d_content.content,
+                                    artifact=d_artifact.artifact,
+                                    relative_path=d_artifact.relative_path
+                                )
+                            else:
+                                raise ValueError(_(
+                                    "Attempting to save a ContactArtifact for an unsaved Artifact"
+                                ))
                             content_artifact_bulk.append(content_artifact)
                 ContentArtifact.objects.bulk_get_or_create(content_artifact_bulk)
                 await self._post_save(batch)

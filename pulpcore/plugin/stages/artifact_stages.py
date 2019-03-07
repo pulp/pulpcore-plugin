@@ -42,7 +42,7 @@ class QueryExistingArtifacts(Stage):
             The coroutine for this stage.
         """
         async for batch in self.batches():
-            all_artifacts_q = Q(pk=None)
+            all_artifacts_q = Q(_created=None)
             for d_content in batch:
                 for d_artifact in d_content.d_artifacts:
                     one_artifact_q = d_artifact.artifact.q()
@@ -149,7 +149,7 @@ class ArtifactDownloader(Stage):
         """
         downloaders_for_content = [
             d_artifact.download() for d_artifact in d_content.d_artifacts
-            if d_artifact.artifact.pk is None and not d_artifact.deferred_download
+            if d_artifact.artifact._state.adding and not d_artifact.deferred_download
         ]
         if downloaders_for_content:
             await asyncio.gather(*downloaders_for_content)
@@ -185,7 +185,7 @@ class ArtifactSaver(Stage):
             da_to_save = []
             for d_content in batch:
                 for d_artifact in d_content.d_artifacts:
-                    if d_artifact.artifact.pk is None and not d_artifact.deferred_download:
+                    if d_artifact.artifact._state.adding and not d_artifact.deferred_download:
                         d_artifact.artifact.file = str(d_artifact.artifact.file)
                         da_to_save.append(d_artifact)
 
