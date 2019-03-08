@@ -11,14 +11,14 @@ export PULP_FILE_PR_NUMBER=$(echo $COMMIT_MSG | grep -oP 'Required\ PR:\ https\:
 export PULP_SMASH_PR_NUMBER=$(echo $COMMIT_MSG | grep -oP 'Required\ PR:\ https\:\/\/github\.com\/PulpQE\/pulp-smash\/pull\/(\d+)' | awk -F'/' '{print $7}')
 
 if [ -z "$PULP_PR_NUMBER" ]; then
-  pip install "git+https://github.com/pulp/pulpcore.git#egg=pulpcore"
+  pip install "git+https://github.com/pulp/pulpcore.git#egg=pulpcore"[postgres]
 else
   cd ../
   git clone https://github.com/pulp/pulpcore.git
   cd pulpcore
   git fetch origin +refs/pull/$PULP_PR_NUMBER/merge
   git checkout FETCH_HEAD
-  pip install -e .
+  pip install -e .[postgres]
   cd ../pulpcore-plugin
 fi
 
