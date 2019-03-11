@@ -29,3 +29,40 @@ class ContentGuard(models.ContentGuard):
             PermissionError: When not authorized.
         """
         raise NotImplementedError()
+
+
+class Content(models.Content):
+    """
+    A piece of managed content.
+
+    Relations:
+
+        _artifacts (models.ManyToManyField): Artifacts related to Content through ContentArtifact
+    """
+    class Meta:
+        abstract = True
+
+    @staticmethod
+    def init_from_artifact_and_relative_path(artifact, relative_path):
+        """
+        Return an instance of the specific content by inspecting an artifact.
+
+        Plugin writers are expected to override this method with an implementation for a specific
+        content type.
+
+        For example:
+            >>> if path.isabs(relative_path):
+            >>>     raise ValueError(_("Relative path can't start with '/'."))
+            >>> return FileContent(relative_path=relative_path, digest=artifact.sha256)
+
+        Args:
+            artifact (:class:`~pulpcore.plugin.models.Artifact`): An instance of an Artifact
+            relative_path (str): Relative path for the content
+
+        Raises:
+            ValueError: If relative_path starts with a '/'.
+
+        Returns:
+            An un-saved instance of :class:`~pulpcore.plugin.models.Content` sub-class.
+        """
+        raise NotImplementedError()
