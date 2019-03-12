@@ -1,5 +1,4 @@
 from collections import defaultdict
-from gettext import gettext as _
 
 from django.db import IntegrityError, transaction
 from django.db.models import Q
@@ -105,17 +104,16 @@ class ContentSaver(Stage):
                                     d_content.content.q())
                             continue
                         for d_artifact in d_content.d_artifacts:
-                            artifact_already_saved = not d_artifact.artifact._state.adding
-                            if artifact_already_saved:
-                                content_artifact = ContentArtifact(
-                                    content=d_content.content,
-                                    artifact=d_artifact.artifact,
-                                    relative_path=d_artifact.relative_path
-                                )
+                            if not d_artifact.artifact._state.adding:
+                                artifact = d_artifact.artifact
                             else:
-                                raise ValueError(_(
-                                    "Attempting to save a ContactArtifact for an unsaved Artifact"
-                                ))
+                                # set to None for lazy synced artifacts
+                                artifact = None
+                            content_artifact = ContentArtifact(
+                                content=d_content.content,
+                                artifact=artifact,
+                                relative_path=d_artifact.relative_path
+                            )
                             content_artifact_bulk.append(content_artifact)
                 ContentArtifact.objects.bulk_get_or_create(content_artifact_bulk)
                 await self._post_save(batch)
