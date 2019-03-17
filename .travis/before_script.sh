@@ -26,16 +26,16 @@ echo "DATABASES = {
 export DJANGO_SETTINGS_MODULE=pulpcore.app.settings
 export PULP_CONTENT_HOST=localhost:8080
 
-pulp-manager makemigrations pulp_app --noinput
+django-admin makemigrations pulp_app --noinput
 if [ "$TEST" != 'docs' ]; then
-  pulp-manager makemigrations file --noinput
+  django-admin makemigrations file --noinput
 fi
 
-pulp-manager migrate auth --noinput
-pulp-manager migrate --noinput
+django-admin migrate auth --noinput
+django-admin migrate --noinput
 
-pulp-manager reset-admin-password --password admin
-pulp-manager runserver >> ~/django_runserver.log 2>&1 &
+django-admin reset-admin-password --password admin
+django-admin runserver >> ~/django_runserver.log 2>&1 &
 gunicorn pulpcore.content:server --bind 'localhost:8080' --worker-class 'aiohttp.GunicornWebWorker' -w 2 >> ~/content_app.log 2>&1 &
 rq worker -n 'resource-manager@%h' -w 'pulpcore.tasking.worker.PulpWorker' -c 'pulpcore.rqconfig' >> ~/resource_manager.log 2>&1 &
 rq worker -n 'reserved-resource-worker-1@%h' -w 'pulpcore.tasking.worker.PulpWorker' -c 'pulpcore.rqconfig' >> ~/reserved_worker-1.log 2>&1 &
