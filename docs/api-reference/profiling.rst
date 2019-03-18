@@ -13,10 +13,10 @@ enabled it will write a sqlite3 with the uuid of the task name it runs in to the
 Summarizing Performance Data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-`pulp-manager` includes command that displays the pipeline along with summary statistics. After
-generating an sqlite3 performance database, use the `stage-profile-summary` command like this::
+`django-admin` includes command that displays the pipeline along with summary statistics. After
+generating a sqlite3 performance database, use the `stage-profile-summary` command like this::
 
-    $ pulp-manager stage-profile-summary /var/lib/pulp/debug/2dcaf53a-4b0f-4b42-82ea-d2d68f1786b0
+    $ django-admin stage-profile-summary /var/lib/pulp/debug/2dcaf53a-4b0f-4b42-82ea-d2d68f1786b0
 
 
 Profiling API Machinery

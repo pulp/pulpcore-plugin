@@ -50,10 +50,10 @@ can make and run database migrations with:
 
 .. code-block:: bash
 
-      pulp-manager makemigrations <plugin_app_label>
-      pulp-manager migrate
+      django-admin makemigrations <plugin_app_label>
+      django-admin migrate
 
-If you recognize this syntax, it is because pulp-manager is used with the same interace as ``django
+If you recognize this syntax, it is because django-admin is used with the same interace as ``django
 admin``, but has additional commands.
 
 
