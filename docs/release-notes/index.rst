@@ -11,6 +11,16 @@ See :doc:`Plugin API <../index>` and
 :doc:`Plugin Development <../plugin-writer/index>`.
 
 
+0.1.0b21
+========
+
+* `List of plugin API related changes in beta 21 <https://github.com/pulp/pulpcore-plugin/compare/0.1.0b20...0.1.0b21>`_
+
+Breaking Changes
+----------------
+
+* `Sync in additive mode by default <https://github.com/pulp/pulpcore-plugin/pull/68>`_
+
 0.1.0b20
 ========
 
