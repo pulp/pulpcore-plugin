@@ -116,12 +116,13 @@ class RemoveDuplicates(Stage):
         Returns:
             The coroutine for this stage.
         """
-        rm_q = Q()
         async for batch in self.batches():
+            rm_q = Q()
             for d_content in batch:
                 if isinstance(d_content.content, self.model):
-                    unit_q_dict = {field: getattr(d_content.content, field)
-                                   for field in self.field_names}
+                    unit_q_dict = {
+                        field: getattr(d_content.content, field) for field in self.field_names
+                    }
                     # Don't remove *this* object if it is already in the repository version.
                     not_this = ~Q(pk=d_content.content.pk)
                     dupe = Q(**unit_q_dict)
