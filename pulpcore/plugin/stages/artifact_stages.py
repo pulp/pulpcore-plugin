@@ -264,7 +264,6 @@ class RemoteArtifactSaver(Stage):
                 else:
                     remote_artifact = self._create_remote_artifact(d_artifact, content_artifact)
                     needed_ras.append(remote_artifact)
-            del d_content.content._remote_artifact_saver_cas
         return needed_ras
 
     @staticmethod
