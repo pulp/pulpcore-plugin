@@ -10,6 +10,10 @@ The Plugin API currently supports version 3.y of Pulp Core.
 See :doc:`Plugin API <../index>` and
 :doc:`Plugin Development <../plugin-writer/index>`.
 
+0.1.0rc1
+========
+
+* `List of plugin API related changes in rc 1 <https://github.com/pulp/pulpcore-plugin/compare/0.1.0b21...0.1.0rc1>`_
 
 0.1.0b21
 ========
