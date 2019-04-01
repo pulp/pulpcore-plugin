@@ -127,8 +127,9 @@ class RemoveDuplicates(Stage):
                     not_this = ~Q(pk=d_content.content.pk)
                     dupe = Q(**unit_q_dict)
                     rm_q |= Q(dupe & not_this)
-            queryset_to_unassociate = self.model.objects.filter(rm_q)
-            self.new_version.remove_content(queryset_to_unassociate)
+            if rm_q:
+                queryset_to_unassociate = self.model.objects.filter(rm_q)
+                self.new_version.remove_content(queryset_to_unassociate)
 
             for d_content in batch:
                 await self.put(d_content)
