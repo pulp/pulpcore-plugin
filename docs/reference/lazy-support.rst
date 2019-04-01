@@ -14,7 +14,7 @@ Adding Support when using DeclarativeVersion
 ============================================
 
 Plugins like `pulp-file` sync content using `DeclarativeVersion`.
-Lazy support can be added by specifying `deferred_download=True` at instanciation of
+Lazy support can be added by specifying `deferred_download=True` at instantiation of
 :class:`pulpcore.plugin.stages.DeclarativeArtifact`.
 
 `Remote.policy` can take several values. To easily translate them, consider a snippet like this one

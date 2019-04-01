@@ -55,6 +55,7 @@ To support this pattern, the declarative content allows to be associated with a
 :class:`asyncio.Future`, that is resolved when the content reaches the
 :class:`pulpcore.plugin.stages.ResolveContentFutures` stage.
 By awaiting this Future, one can implement an informational back loop into earlier stages.
+
 .. warning::
 
    In order to prevent deadlocks, be sure that you mark the declarative content with
