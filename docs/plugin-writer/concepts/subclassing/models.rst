@@ -132,3 +132,13 @@ Also, the max length for ``CharField`` in MySQL/MariaDB is 255::
 In general, we recommend testing your plugins against as many database systems as possible. Travis
 or other continuous integration environments can also be used to verify that your plugin is database
 agnostic.
+
+ForeignKey Gotchas
+~~~~~~~~~~~~~~~~~~
+
+The orphan cleanup operation performs mass-deletion of Content units that are not associated with
+any repository. Any ForeignKey relationships that refer to Content with a deletion relationship of
+``PROTECT`` will cause Orphan cleanup errors like::
+
+    django.db.models.deletion.ProtectedError: ("Cannot delete some instances of model 'MyContent'
+    because they are referenced through a protected foreign key: 'MyOtherContent.mycontent'"
