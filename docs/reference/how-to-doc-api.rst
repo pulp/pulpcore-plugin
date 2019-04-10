@@ -32,3 +32,17 @@ Response status codes can be generated through the `Meta` class on the serialize
 
     Plugin authors can provide manual overrides using the `@swagger_auto_schema decorator
     <https://drf-yasg.readthedocs.io/en/stable/drf_yasg.html#drf_yasg.utils.swagger_auto_schema>`_
+
+The OpenAPI schema for pulpcore and all installed plugins can be downloaded from the ``pulp-api``
+server:
+
+.. code-block:: bash
+
+    curl -o api.json http://localhost:24817/pulp/api/v3/docs/api.json
+
+The OpenAPI schema for a specific plugin can be downloaded by specifying the plugin's module name
+as a GET parameter. For example for pulp_rpm only endpoints use a query like this:
+
+.. code-block:: bash
+
+    curl -o api.json http://localhost:24817/pulp/api/v3/docs/api.json?plugin=pulp_rpm
