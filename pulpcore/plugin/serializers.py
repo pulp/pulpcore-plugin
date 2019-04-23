@@ -13,6 +13,7 @@ from pulpcore.app.serializers import (  # noqa
     NestedIdentityField,
     NestedRelatedField,
     RemoteSerializer,
+    PublicationSerializer,
     PublisherSerializer,
     RelatedField,
     RepositorySyncURLSerializer,
