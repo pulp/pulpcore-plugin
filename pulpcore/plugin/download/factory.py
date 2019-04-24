@@ -3,6 +3,7 @@ import atexit
 import copy
 from gettext import gettext as _
 import ssl
+from tempfile import NamedTemporaryFile
 from urllib.parse import urlparse
 
 import aiohttp
@@ -79,26 +80,26 @@ class DownloaderFactory:
         tcp_conn_opts = {'force_close': True}
 
         sslcontext = None
-        if self._remote.ssl_ca_certificate.name:
-            sslcontext = ssl.create_default_context(cafile=self._remote.ssl_ca_certificate.name)
-            if self._remote.ssl_client_key.name and self._remote.ssl_client_certificate.name:
-                sslcontext.load_cert_chain(
-                    self._remote.ssl_client_certificate.name,
-                    self._remote.ssl_client_key.name
-                )
-        else:
-            if self._remote.ssl_client_key.name and self._remote.ssl_client_certificate.name:
+        if self._remote.ssl_ca_certificate:
+            sslcontext = ssl.create_default_context(cadata=self._remote.ssl_ca_certificate)
+        if self._remote.ssl_client_key and self._remote.ssl_client_certificate:
+            if not sslcontext:
                 sslcontext = ssl.create_default_context()
-                sslcontext.load_cert_chain(
-                    self._remote.ssl_client_certificate.name,
-                    self._remote.ssl_client_key.name
-                )
-
+            with NamedTemporaryFile() as key_file:
+                key_file.write(bytes(self._remote.ssl_client_key, 'utf-8'))
+                with NamedTemporaryFile() as cert_file:
+                    cert_file.write(bytes(self._remote.ssl_client_certificate, 'utf-8'))
+                    sslcontext.load_cert_chain(
+                        cert_file.name,
+                        key_file.name
+                    )
+        if not self._remote.ssl_validation:
+            if not sslcontext:
+                sslcontext = ssl.create_default_context()
+            sslcontext.check_hostname = False
+            sslcontext.verify_mode = ssl.CERT_NONE
         if sslcontext:
             tcp_conn_opts['ssl_context'] = sslcontext
-            if not self._remote.ssl_validation:
-                sslcontext.check_hostname = False
-                sslcontext.verify_mode = ssl.CERT_NONE
 
         conn = aiohttp.TCPConnector(**tcp_conn_opts)
 
