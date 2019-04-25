@@ -20,4 +20,5 @@ from pulpcore.app.serializers import (  # noqa
     RepositoryPublishURLSerializer,
     SingleContentArtifactField,
     relative_path_validator,
+    validate_unknown_fields
 )
