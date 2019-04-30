@@ -39,9 +39,10 @@ class QueryExistingContents(Stage):
         async for batch in self.batches():
             content_q_by_type = defaultdict(lambda: Q(_created=None))
             for d_content in batch:
-                model_type = type(d_content.content)
-                unit_q = d_content.content.q()
-                content_q_by_type[model_type] = content_q_by_type[model_type] | unit_q
+                if d_content.content._state.adding:
+                    model_type = type(d_content.content)
+                    unit_q = d_content.content.q()
+                    content_q_by_type[model_type] = content_q_by_type[model_type] | unit_q
 
             for model_type in content_q_by_type.keys():
                 for result in model_type.objects.filter(content_q_by_type[model_type]):
