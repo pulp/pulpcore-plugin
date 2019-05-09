@@ -7,18 +7,19 @@ from pulpcore.app.models import (  # noqa
     Content,
     ContentArtifact,
     CreatedResource,
-    Distribution,
     MasterModel,
     Model,
     ProgressBar,
     ProgressSpinner,
     Publication,
+    PublicationDistribution,
     PublishedArtifact,
     PublishedMetadata,
     Repository,
     RemoteArtifact,
     RepositoryContent,
-    RepositoryVersion
+    RepositoryVersion,
+    RepositoryVersionDistribution,
 )
 
 from .content import ContentGuard  # noqa
