@@ -30,4 +30,5 @@ take care of a majority of the boilerplate.
    planning-guide
    concepts/index
    plugin-walkthrough
+   custom-installation-tasks
 
