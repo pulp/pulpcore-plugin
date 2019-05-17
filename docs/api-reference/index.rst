@@ -24,6 +24,7 @@ and not protected by the Pulp Plugin API's semantic versioning guarantees.
     download
     stages
     profiling
+    content-app
 
 
 .. automodule:: pulpcore.plugin
