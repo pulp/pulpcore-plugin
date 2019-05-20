@@ -44,12 +44,12 @@ jobs:
       on:
         tags: true
   - stage: publish-beta-docs
-    script: bash .travis/publish_docs.sh beta
+    script: bash .travis/publish_docs.sh rc
     env:
       - DJANGO_MAX=2.2.100
       - DB=postgres
       - TEST=docs
-    if: tag =~ ^pulpcore-plugin-3.0*
+    if: tag IS present
   - stage: publish-nightly-docs
     script: bash .travis/publish_docs.sh nightly
     env:
