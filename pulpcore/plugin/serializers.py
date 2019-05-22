@@ -3,6 +3,7 @@ from pulpcore.app.serializers import (  # noqa
     ArtifactSerializer,
     AsyncOperationResponseSerializer,
     BaseDistributionSerializer,
+    ContentChecksumSerializer,
     ContentGuardSerializer,
     NoArtifactContentSerializer,
     SingleArtifactContentSerializer,
