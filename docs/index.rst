@@ -3,8 +3,7 @@ Plugin API
 
 The Pulp Plugin API is versioned separately from Pulp Core. It is governed by `semantic
 versioning <http://semver.org/>`_. Backwards incompatible changes may be made until the
-Plugin API reaches stability with v1.0. For the latest version of the Plugin API see
-:doc:`release notes <../release-notes/index>`.
+Plugin API reaches stability with v1.0.
 
 Plugin Writer's Guide
 ---------------------
@@ -23,9 +22,7 @@ Plugin API Reference
 .. toctree::
    api-reference/index
 
-Release Notes
--------------
+
 .. toctree::
-   release-notes/index
-
-
+   changes
+   contributing
