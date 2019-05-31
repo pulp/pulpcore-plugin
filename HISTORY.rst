@@ -1,15 +1,3 @@
-============================
-Plugin API 0.1 Release Notes
-============================
-
-The Plugin API is not yet declared as stable. Backwards incompatible changes might be made until
-stable version 1.0 is reached.
-
-The Plugin API currently supports version 3.y of Pulp Core.
-
-See :doc:`Plugin API <../index>` and
-:doc:`Plugin Development <../plugin-writer/index>`.
-
 0.1.0rc2
 ========
 
