@@ -40,10 +40,10 @@ following order:
    7. :class:`pulpcore.plugin.stages.ArtifactSaver`
    8. :class:`pulpcore.plugin.stages.ResolveContentFutures`
 
-Lazy synchronizing
-------------------
+On-demand synchronizing
+-----------------------
 
-See :ref:`lazy-support`.
+See :ref:`on-demand-support`.
 
 .. _multi-level-discovery:
 

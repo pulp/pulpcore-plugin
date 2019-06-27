@@ -108,7 +108,7 @@ class ContentSaver(Stage):
                             if not d_artifact.artifact._state.adding:
                                 artifact = d_artifact.artifact
                             else:
-                                # set to None for lazy synced artifacts
+                                # set to None for on-demand synced artifacts
                                 artifact = None
                             content_artifact = ContentArtifact(
                                 content=d_content.content,

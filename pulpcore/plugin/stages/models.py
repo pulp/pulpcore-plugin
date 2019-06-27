@@ -27,7 +27,7 @@ class DeclarativeArtifact:
             :class:`~pulpcore.plugin.models.Artifact`.
         extra_data (dict): A dictionary available for additional data to be stored in.
         deferred_download (bool): Whether this artifact should be downloaded and saved
-            in the artifact stages. Defaults to `False`. See :ref:`lazy-support`.
+            in the artifact stages. Defaults to `False`. See :ref:`on-demand-support`.
 
     Raises:
         ValueError: If `artifact`, `url`, `relative_path`, or `remote` are not specified.
