@@ -1,20 +1,20 @@
-.. _lazy-support:
+.. _on-demand-support:
 
-Lazy Support
-------------
+On-Demand Support
+-----------------
 
-"Lazy support" refers to a plugin's ability to support downloading and creating Content but not
+"On-Demand support" refers to a plugin's ability to support downloading and creating Content but not
 downloading their associated Artifacts. By convention, users expect the `Remote.policy` attribute to
 determine when Artifacts will be downloaded. See the user docs for specifics on the user
 expectations there.
 
-.. _lazy-support-with-da:
+.. _on-demand-support-with-da:
 
 Adding Support when using DeclarativeVersion
 ============================================
 
 Plugins like `pulp-file` sync content using `DeclarativeVersion`.
-Lazy support can be added by specifying `deferred_download=True` at instantiation of
+On-demand support can be added by specifying `deferred_download=True` at instantiation of
 :class:`pulpcore.plugin.stages.DeclarativeArtifact`.
 
 `Remote.policy` can take several values. To easily translate them, consider a snippet like this one
@@ -35,7 +35,7 @@ taken from `pulp-file`.::
 
 .. hint::
 
-   The `deferred_download` flag is used at the artifact level, to support lazy concepts for
+   The `deferred_download` flag is used at the artifact level, to support on-demand concepts for
    plugins that need some artifacts to download immediately in all cases.
    See also :ref:`multi-level-discovery`.
 
@@ -43,10 +43,10 @@ taken from `pulp-file`.::
 Adding Support when using a Custom Stages API Pipeline
 ======================================================
 
-Plugins like `pulp-rpm` that sync content using a custom pipeline can enable lazy support by
+Plugins like `pulp-rpm` that sync content using a custom pipeline can enable on-demand support by
 excluding the `QueryExistingArtifacts`, `ArtifactDownloader` and `ArtifactSaver` stages. Without
 these stages included, no Artifact downloading will occur. Content unit saving will occur, which
-will correctly create the lazy content units.
+will correctly create the on-demand content units.
 
 `Remote.policy` can take several values. To easily maintain the pipeline consider a snippet like
 this one inspired by `pulp-rpm`::
@@ -61,7 +61,7 @@ this one inspired by `pulp-rpm`::
 
    Skipping of those Stages does not work with :ref:`multi-level-discovery`.
    If you need some artifacts downloaded anyway, follow the example on
-   :ref:lazy-support-with-dv` and include the artifact stages in the custom pipeline.
+   :ref:on-demand-support-with-dv` and include the artifact stages in the custom pipeline.
 
 .. hint::
 
@@ -72,8 +72,8 @@ What if the Custom Pipeline Needs Artifact Downloading?
 
 For example, `pulp-docker` uses a custom Stages API Pipeline, and relies on Artifact downloading to
 download metadata that is saved and stored as a Content unit. This metadata defines more Content
-units to be created without downloading their corresponding Artifacts. The lazy support for this
-type needs to download Artifacts for those content types, but not others.
+units to be created without downloading their corresponding Artifacts. The on-demand support for
+this type needs to download Artifacts for those content types, but not others.
 
 .. warning::
    TODO:  https://pulp.plan.io/issues/4209
@@ -83,12 +83,12 @@ How Does This Work at the Model Layer?
 ======================================
 
 The presence of a `RemoteArtifact` is what allows the Pulp content app to fetch and serve that
-Artifact on-demand. So a Content unit is lazy if and only if:
+Artifact on-demand. So a Content unit is on-demand if and only if:
 
 1. It has a saved Content unit
 
 2. A `ContentArtifact` for each `Artifact` is saved that the Content unit would have referenced.
-   Note: the `ContentArtifact` is created in both lazy and non-lazy cases.
+   Note: the `ContentArtifact` is created in both on-demand and not on-demand cases.
 
 3. Instead of creating and saving an `Artifact`, a `RemoteArtifact` is created. This contains any
    known digest or size information allowing for automatic validation when the `Artifact` is
@@ -111,4 +111,4 @@ future requests to serve the already-downloaded and validated Artifact.
    `Content` unit is created but many `RemoteArtifact` objects may be created. The Pulp Content app
    will try all `RemoteArtifact` objects that correspond with a `ContentArtifact`. It's possible an
    unexpected `Remote` could be used when fetching that equivalent `Content` unit. Similar warnings
-   are in the user documentation on lazy.
+   are in the user documentation on on-demand.
