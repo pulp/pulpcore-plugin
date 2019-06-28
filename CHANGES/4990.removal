@@ -1,3 +1,0 @@
-The `RemoteSerializer.policy` attribute in the plugin API had its choices restricted to only
-'immediate'. Plugin writers wanting to use 'on_demand' or 'streamed' as values for 'policy' should
-redefine the 'policy' attribute on the detail Remote.
