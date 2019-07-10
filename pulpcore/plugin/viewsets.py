@@ -15,3 +15,6 @@ from pulpcore.app.viewsets import (  # noqa
     RemoteFilter,
     RemoteViewSet,
 )
+
+# Import custom filters that are potentially useful to plugin writers
+from pulpcore.app.viewsets.custom_filters import HyperlinkRelatedFilter  # noqa
