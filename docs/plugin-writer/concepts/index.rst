@@ -11,11 +11,13 @@ the plugin_template, but if you are interested in the details of what it provide
 :ref:`plugin-django-application` for more information for how plugins are "discovered" and connected to
 the ``pulpcore`` Django app. Additional information is given as inline comments in the template.
 
+
 Plugin API Usage
 ----------------
 Plugin Applications interact with pulpcore with two high level interfaces, **subclassing** and
 adding **tasks**. Additionally, plugins that need to implement dynamic web APIs can
 optionally provide their own Django views. See our :ref:`live-apis` page for more information.
+
 
 .. _subclassing-general:
 
@@ -35,6 +37,7 @@ the box.
    subclassing/models
    subclassing/serializers
    subclassing/viewsets
+
 
 .. _writing-tasks:
 
@@ -65,6 +68,7 @@ Tasks are deployed from Views or Viewsets, please see :ref:`kick-off-tasks`.
    tasks/publish
    tasks/export
 
+
 Sync Pipeline
 -------------
 
@@ -72,3 +76,15 @@ Sync Pipeline
    :maxdepth: 2
 
    sync_pipeline/sync_pipeline
+
+
+Content Protection
+------------------
+
+Users can configure a ``ContentGuard`` to protect a ``Distribution`` on their own, but some plugins
+want to offer built-in content protection features. For example pulp_docker may only want a user to
+download docker images they have rights to based on some permissions system pulp_docker could
+provide.
+
+For more information see the :ref:`ContentGuard Usage by Plugin Writers
+<plugin-writers-use-content-protection>` documentation.
