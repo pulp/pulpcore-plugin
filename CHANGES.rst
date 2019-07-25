@@ -13,6 +13,32 @@ Changelog
 
 .. towncrier release notes start
 
+0.1.0rc4 (2019-07-25)
+=====================
+
+
+Features
+--------
+
+- The ``DigestValidationError`` and ``SizeValidationError`` are available in the
+  ``pulpcore.plugin.exceptions`` package.
+  `#5077 <https://pulp.plan.io/issues/5077>`_
+- The ``HyperlinkRelatedFilter`` is available in the ``pulpcore.plugin.viewsets`` submodule.
+  `#5103 <https://pulp.plan.io/issues/5103>`_
+
+
+Improved Documentation
+----------------------
+
+- Adds a new page and various updates with ``ContentGuard`` documentation for plugin writers.
+  `#3972 <https://pulp.plan.io/issues/3972>`_
+- Removed beta changelog entries to shorten the changelog.
+  `#5166 <https://pulp.plan.io/issues/5166>`_
+
+
+----
+
+
 0.1.0rc3 (2019-06-28)
 =====================
 
