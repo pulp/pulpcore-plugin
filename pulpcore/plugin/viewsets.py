@@ -17,4 +17,4 @@ from pulpcore.app.viewsets import (  # noqa
 )
 
 # Import custom filters that are potentially useful to plugin writers
-from pulpcore.app.viewsets.custom_filters import HyperlinkRelatedFilter  # noqa
+from pulpcore.app.viewsets.custom_filters import CharInFilter, HyperlinkRelatedFilter  # noqa
