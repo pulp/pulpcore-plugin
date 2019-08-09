@@ -29,6 +29,9 @@ using these fields.
    One of Pulp's goals is to work correctly on multiple databases. It is probably best to avoid
    fields that are not database agnostic. See Database Gotchas below.
 
+.. note::
+   It is required to declare the ``default_related_name``.
+
 The TYPE class attribute is used for filtering purposes.
 
 .. code-block:: python
@@ -42,6 +45,9 @@ The TYPE class attribute is used for filtering purposes.
             """
             TYPE = 'file'
             digest = models.TextField(null=False)
+
+            class Meta:
+                default_related_name = "%(app_label)s_%(model_name)s"
 
 
 Here we create a new field using use Django's ``TextField``. After adding/modifying a model, you
@@ -83,6 +89,7 @@ Adding to the simplified ``FileContent`` above:
             class Meta:
                 # Note the comma, this must be a tuple.
                 unique_together = ('digest',)
+                default_related_name = "%(app_label)s_%(model_name)s"
 
 In this example the Content's uniqueness enforced on a single field ``digest``. For a multi-field
 uniqueness, simply add other fields.
@@ -105,6 +112,7 @@ uniqueness, simply add other fields.
             digest = models.TextField(null=False)
 
             class Meta:
+                default_related_name = "%(app_label)s_%(model_name)s"
                 unique_together = (
                    'relative_path',
                    'digest',
