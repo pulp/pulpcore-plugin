@@ -80,12 +80,8 @@ class BaseDownloader:
                 Useful for limiting the number of outstanding downloaders in various ways.
         """
         self.url = url
-        if custom_file_object:
-            self._writer = custom_file_object
-            self.path = None
-        else:
-            self._writer = tempfile.NamedTemporaryFile(dir=os.getcwd(), delete=False)
-            self.path = self._writer.name
+        self._writer = custom_file_object
+        self.path = None
         self.expected_digests = expected_digests
         self.expected_size = expected_size
         if semaphore:
@@ -94,6 +90,17 @@ class BaseDownloader:
             self.semaphore = asyncio.Semaphore()  # This will always be acquired
         self._digests = {n: hashlib.new(n) for n in Artifact.DIGEST_FIELDS}
         self._size = 0
+
+    def _ensure_writer_has_open_file(self):
+        """
+        Create a temporary file on demand.
+
+        Create a temporary file when it's actually used,
+        allowing plugin writers to instantiate many downloaders in memory.
+        """
+        if not self._writer:
+            self._writer = tempfile.NamedTemporaryFile(dir=os.getcwd(), delete=False)
+            self.path = self._writer.name
 
     async def handle_data(self, data):
         """
@@ -107,6 +114,7 @@ class BaseDownloader:
         Args:
             data (bytes): The data to be handled by the downloader.
         """
+        self._ensure_writer_has_open_file()
         self._writer.write(data)
         self._record_size_and_digests_for_data(data)
 
@@ -125,6 +133,7 @@ class BaseDownloader:
                 doesn't match the size of the data passed to
                 :meth:`~pulpcore.plugin.download.BaseDownloader.handle_data`.
         """
+        self._ensure_writer_has_open_file()
         self._writer.flush()
         os.fsync(self._writer.fileno())
         self._writer.close()
