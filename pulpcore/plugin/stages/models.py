@@ -30,10 +30,11 @@ class DeclarativeArtifact:
             in the artifact stages. Defaults to `False`. See :ref:`on-demand-support`.
 
     Raises:
-        ValueError: If `artifact`, `url`, `relative_path`, or `remote` are not specified.
+        ValueError: If `artifact`, `url`, or `relative_path` are not specified.
     """
 
-    __slots__ = ('artifact', 'url', 'relative_path', 'remote', 'extra_data', 'deferred_download')
+    __slots__ = ('artifact', 'url', 'relative_path', 'remote',
+                 'extra_data', 'deferred_download')
 
     def __init__(self, artifact=None, url=None, relative_path=None, remote=None, extra_data=None,
                  deferred_download=False):
@@ -41,8 +42,6 @@ class DeclarativeArtifact:
             raise ValueError(_("DeclarativeArtifact must have a 'url'"))
         if not relative_path:
             raise ValueError(_("DeclarativeArtifact must have a 'relative_path'"))
-        if not remote:
-            raise ValueError(_("DeclarativeArtifact must have a 'remote'"))
         if not artifact:
             raise ValueError(_("DeclarativeArtifact must have a 'artifact'"))
         self.artifact = artifact
@@ -59,28 +58,29 @@ class DeclarativeArtifact:
         Returns:
             Returns the :class:`~pulpcore.plugin.download.DownloadResult` of the Artifact.
         """
-        expected_digests = {}
-        validation_kwargs = {}
-        for digest_name in self.artifact.DIGEST_FIELDS:
-            digest_value = getattr(self.artifact, digest_name)
-            if digest_value:
-                expected_digests[digest_name] = digest_value
-        if expected_digests:
-            validation_kwargs['expected_digests'] = expected_digests
-        if self.artifact.size:
-            expected_size = self.artifact.size
-            validation_kwargs['expected_size'] = expected_size
-        downloader = self.remote.get_downloader(
-            url=self.url,
-            **validation_kwargs
-        )
-        # Custom downloaders may need extra information to complete the request.
-        download_result = await downloader.run(extra_data=self.extra_data)
-        self.artifact = Artifact(
-            **download_result.artifact_attributes,
-            file=download_result.path
-        )
-        return download_result
+        if self.remote:
+            expected_digests = {}
+            validation_kwargs = {}
+            for digest_name in self.artifact.DIGEST_FIELDS:
+                digest_value = getattr(self.artifact, digest_name)
+                if digest_value:
+                    expected_digests[digest_name] = digest_value
+            if expected_digests:
+                validation_kwargs['expected_digests'] = expected_digests
+            if self.artifact.size:
+                expected_size = self.artifact.size
+                validation_kwargs['expected_size'] = expected_size
+            downloader = self.remote.get_downloader(
+                url=self.url,
+                **validation_kwargs
+            )
+            # Custom downloaders may need extra information to complete the request.
+            download_result = await downloader.run(extra_data=self.extra_data)
+            self.artifact = Artifact(
+                **download_result.artifact_attributes,
+                file=download_result.path
+            )
+            return download_result
 
 
 class DeclarativeContent:
