@@ -101,12 +101,12 @@ class TestArtifactDownloader(asynctest.ClockedTestCase):
 
     async def download_task(self, max_concurrent_content=3):
         """
-        A coroutine running the downloader stage with a mocked ProgressBar.
+        A coroutine running the downloader stage with a mocked ProgressReport.
 
         Returns:
-            The done count of the ProgressBar.
+            The done count of the ProgressReport.
         """
-        with mock.patch('pulpcore.plugin.stages.artifact_stages.ProgressBar') as pb:
+        with mock.patch('pulpcore.plugin.stages.artifact_stages.ProgressReport') as pb:
             pb.return_value.__enter__.return_value.done = 0
             ad = ArtifactDownloader(max_concurrent_content=max_concurrent_content)
             ad._connect(self.in_q, self.out_q)

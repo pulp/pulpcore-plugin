@@ -1,6 +1,6 @@
 from django.db.models import Q
 
-from pulpcore.plugin.models import Content, ProgressBar
+from pulpcore.plugin.models import Content, ProgressReport
 
 from .api import Stage
 
@@ -13,7 +13,7 @@ class ContentAssociation(Stage):
     compute the units already associated but not received from `self._in_q`. These units are passed
     via `self._out_q` to the next stage as a :class:`django.db.models.query.QuerySet`.
 
-    This stage creates a ProgressBar named 'Associating Content' that counts the number of units
+    This stage creates a ProgressReport named 'Associating Content' that counts the number of units
     associated. Since it's a stream the total count isn't known until it's finished.
 
     Args:
@@ -34,7 +34,7 @@ class ContentAssociation(Stage):
         Returns:
             The coroutine for this stage.
         """
-        with ProgressBar(message='Associating Content', code='associating.content') as pb:
+        with ProgressReport(message='Associating Content', code='associating.content') as pb:
             to_delete = set(self.new_version.content.values_list('pk', flat=True))
             async for batch in self.batches():
                 to_add = set()
@@ -57,8 +57,8 @@ class ContentUnassociation(Stage):
     """
     A Stages API stage that unassociates content units from `new_version`.
 
-    This stage creates a ProgressBar named 'Un-Associating Content' that counts the number of units
-    un-associated. Since it's a stream the total count isn't known until it's finished.
+    This stage creates a ProgressReport named 'Un-Associating Content' that counts the number of
+    units un-associated. Since it's a stream the total count isn't known until it's finished.
 
     Args:
         new_version (:class:`~pulpcore.plugin.models.RepositoryVersion`): The repo version this
@@ -78,7 +78,7 @@ class ContentUnassociation(Stage):
         Returns:
             The coroutine for this stage.
         """
-        with ProgressBar(message='Un-Associating Content', code='unassociating.content') as pb:
+        with ProgressReport(message='Un-Associating Content', code='unassociating.content') as pb:
             async for queryset_to_unassociate in self.items():
                 self.new_version.remove_content(queryset_to_unassociate)
                 pb.done = pb.done + queryset_to_unassociate.count()
