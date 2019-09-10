@@ -88,3 +88,28 @@ provide.
 
 For more information see the :ref:`ContentGuard Usage by Plugin Writers
 <plugin-writers-use-content-protection>` documentation.
+
+
+Plugin Settings
+---------------
+
+Plugins can define settings by creating a ``<your plugin>.app.settings`` module containing settings
+as you would define in the Django Settings File itself. ``pulpcore`` ships the actual settings.py
+file so settings cannot be added directly as with most Django deployments. Instead as each plugin is
+loaded, pulpcore looks for the ``<your plugin>.app.settings`` module and uses ``dynaconf`` to
+overlay the settings on top of ``pulpcore``'s settings and user provided settings.
+
+Settings are parsed in the following order with later settings overwriting earlier ones:
+
+1. Settings from ``/etc/pulp/settings.py``.
+2. Settings from ``pulpcore.app.settings`` (the pulpcore provided settings defaults).
+3. Plugin settings from ``<your plugin>.app.settings``.
+
+In some cases a setting should not overwrite an existing setting, but instead add to it. For
+example, consider adding a custom log handler or logger to the `LOGGING <https://github.com/pulp/
+pulpcore/blob/ec336c2b7bc7cefd3a28fc69dcd1c65655332841/pulpcore/app/settings.py#L183-L202>`_
+settings. You don't want to fully overwrite it, but instead add or overwrite only a sub-portion.
+``dynaconf`` provides the `dynaconf_merge feature <https://dynaconf.readthedocs.io/en/latest/guides/
+usage.html#merging-existing-values>`_ which is for merging settings instead of overwriting them. For
+example, pulp_ansible makes use of this `here <https://github.com/pulp/pulp_ansible/blob/
+31dd6b77f0e2748644a4b76607be4a6cd2b6ce89/pulp_ansible/app/settings.py>`_.
