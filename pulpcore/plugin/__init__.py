@@ -1,4 +1,4 @@
-__version__ = '0.1.0rc5'
+__version__ = '0.1.0rc6.dev'
 
 # plugins declare that they are a pulp plugin by subclassing PulpPluginAppConfig
 from pulpcore.app.apps import PulpPluginAppConfig  # noqa
