@@ -1,1 +1,0 @@
-Fixes `too many open files` when trying to perform large syncs with many downloads.

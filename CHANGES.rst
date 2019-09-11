@@ -13,6 +13,40 @@ Changelog
 
 .. towncrier release notes start
 
+0.1.0rc5.dev (2019-09-10)
+=========================
+
+
+Features
+--------
+
+- Expose CharInFilter to plugins, which can filter by lists of strings.
+  `#5182 <https://pulp.plan.io/issues/5182>`_
+- Plugin writers can now define settings programatically.
+  `#5290 <https://pulp.plan.io/issues/5290>`_
+
+
+Bugfixes
+--------
+
+- Breaking change on how to subclass Master/Detail models in plugins, now `default_related_name` is required for Detail models.
+  `#4681 <https://pulp.plan.io/issues/4681>`_
+- Fixes `too many open files` when trying to perform large syncs with many downloads.
+  `#5323 <https://pulp.plan.io/issues/5323>`_
+
+
+Improved Documentation
+----------------------
+
+- Updating docs for subclassing models.
+  `#4681 <https://pulp.plan.io/issues/4681>`_
+- Added documentation on how to add settings programatically.
+  `#5290 <https://pulp.plan.io/issues/5290>`_
+
+
+----
+
+
 0.1.0rc4 (2019-07-25)
 =====================
 
