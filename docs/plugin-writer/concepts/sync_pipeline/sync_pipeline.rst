@@ -37,8 +37,7 @@ following order:
    4. :class:`pulpcore.plugin.stages.ArtifactSaver`
    5. :class:`pulpcore.plugin.stages.ContentSaver`
    6. :class:`pulpcore.plugin.stages.RemoveDuplicates`
-   7. :class:`pulpcore.plugin.stages.ArtifactSaver`
-   8. :class:`pulpcore.plugin.stages.ResolveContentFutures`
+   7. :class:`pulpcore.plugin.stages.ResolveContentFutures`
 
 On-demand synchronizing
 -----------------------
