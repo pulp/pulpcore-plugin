@@ -149,7 +149,9 @@ class ArtifactDownloader(Stage):
         """
         downloaders_for_content = [
             d_artifact.download() for d_artifact in d_content.d_artifacts
-            if d_artifact.artifact._state.adding and not d_artifact.deferred_download
+            if d_artifact.artifact._state.adding and
+            not d_artifact.deferred_download and
+            not d_artifact.artifact.file
         ]
         if downloaders_for_content:
             await asyncio.gather(*downloaders_for_content)
