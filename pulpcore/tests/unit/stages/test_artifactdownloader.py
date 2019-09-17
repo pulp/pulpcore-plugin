@@ -75,13 +75,15 @@ class TestArtifactDownloader(asynctest.ClockedTestCase):
         await super().advance(delta)
         self.now += delta
 
-    def queue_dc(self, delays=[]):
+    def queue_dc(self, delays=[], artifact_path=None):
         """Put a DeclarativeContent instance into `in_q`
 
         For each `delay` in `delays`, associate a DeclarativeArtifact
         with download duration `delay` to the content unit. `delay ==
         None` means that the artifact is already present (pk is set)
-        and no download is required.
+        and no download is required. `artifact_path != None` means
+        that the Artifact already has a file associated with it and a
+        download does not need to be scheduled.
         """
         das = []
         for delay in delays:
@@ -89,6 +91,7 @@ class TestArtifactDownloader(asynctest.ClockedTestCase):
             artifact.pk = uuid4()
             artifact._state.adding = delay is not None
             artifact.DIGEST_FIELDS = []
+            artifact.file = artifact_path
             remote = mock.Mock()
             remote.get_downloader = DownloaderMock
             das.append(DeclarativeArtifact(artifact=artifact, url=str(delay),
@@ -339,3 +342,23 @@ class TestArtifactDownloader(asynctest.ClockedTestCase):
         await self.advance_to(2.5)
         self.assertTrue(download_task.done())
         self.assertIsInstance(download_task.exception(), MockException)
+
+    async def test_download_artifact_with_file(self):
+        download_task = self.loop.create_task(self.download_task())
+
+        # Create 3 downloads with Artifacts that already have a file
+        self.queue_dc(delays=[1, 2, 3], artifact_path='/foo/bar')
+        # Create 3 downloads with Artifacts that don't have a file
+        self.queue_dc(delays=[1, 2, 3], artifact_path=None)
+        self.in_q.put_nowait(None)
+
+        # At 0.5 seconds only 3 should be running and 0 done
+        await self.advance_to(0.5)
+        self.assertEqual(DownloaderMock.downloads, 0)
+        self.assertEqual(DownloaderMock.running, 3)
+
+        # At 10 seconds all 3 should be done
+        await self.advance_to(3)
+        self.assertEqual(DownloaderMock.downloads, 3)
+        self.assertEqual(DownloaderMock.running, 0)
+        self.assertEqual(download_task.result(), DownloaderMock.downloads)

@@ -30,10 +30,12 @@ class DeclarativeArtifact:
             in the artifact stages. Defaults to `False`. See :ref:`on-demand-support`.
 
     Raises:
-        ValueError: If `artifact`, `url`, `relative_path`, or `remote` are not specified.
+        ValueError: If `artifact`, `url`, or `relative_path` are not specified. If `remote` is not
+        specified and `artifact` doesn't have a file.
     """
 
-    __slots__ = ('artifact', 'url', 'relative_path', 'remote', 'extra_data', 'deferred_download')
+    __slots__ = ('artifact', 'url', 'relative_path', 'remote',
+                 'extra_data', 'deferred_download')
 
     def __init__(self, artifact=None, url=None, relative_path=None, remote=None, extra_data=None,
                  deferred_download=False):
@@ -41,10 +43,11 @@ class DeclarativeArtifact:
             raise ValueError(_("DeclarativeArtifact must have a 'url'"))
         if not relative_path:
             raise ValueError(_("DeclarativeArtifact must have a 'relative_path'"))
-        if not remote:
-            raise ValueError(_("DeclarativeArtifact must have a 'remote'"))
         if not artifact:
             raise ValueError(_("DeclarativeArtifact must have a 'artifact'"))
+        if not remote and not artifact.file:
+            raise ValueError(_("DeclarativeArtifact must have a 'remote' if the Artifact doesn't "
+                               "have a file backing it."))
         self.artifact = artifact
         self.url = url
         self.relative_path = relative_path

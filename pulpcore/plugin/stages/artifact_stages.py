@@ -149,7 +149,9 @@ class ArtifactDownloader(Stage):
         """
         downloaders_for_content = [
             d_artifact.download() for d_artifact in d_content.d_artifacts
-            if d_artifact.artifact._state.adding and not d_artifact.deferred_download
+            if d_artifact.artifact._state.adding and
+            not d_artifact.deferred_download and
+            not d_artifact.artifact.file
         ]
         if downloaders_for_content:
             await asyncio.gather(*downloaders_for_content)
@@ -232,7 +234,8 @@ class RemoteArtifactSaver(Stage):
         remotes_present = set()
         for d_content in batch:
             for d_artifact in d_content.d_artifacts:
-                remotes_present.add(d_artifact.remote)
+                if d_artifact.remote:
+                    remotes_present.add(d_artifact.remote)
 
         prefetch_related_objects(
             [d_c.content for d_c in batch],
@@ -262,8 +265,9 @@ class RemoteArtifactSaver(Stage):
                     if remote_artifact.remote_id == d_artifact.remote.pk:
                         break
                 else:
-                    remote_artifact = self._create_remote_artifact(d_artifact, content_artifact)
-                    needed_ras.append(remote_artifact)
+                    if d_artifact.remote:
+                        remote_artifact = self._create_remote_artifact(d_artifact, content_artifact)
+                        needed_ras.append(remote_artifact)
         return needed_ras
 
     @staticmethod
