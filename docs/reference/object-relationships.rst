@@ -28,9 +28,8 @@ Here is a gist of how models are related to each other and what each model is re
 * :class:`~pulpcore.plugin.models.PublishedArtifact` refers to
   :class:`~pulpcore.plugin.models.ContentArtifact` which is published and belongs to a certain
   :class:`~pulpcore.app.models.Publication`.
-* :class:`~pulpcore.plugin.models.PublishedMetadata` is a repository metadata which is published,
-  located in ``/var/lib/pulp/published`` and belongs to a certain
-  :class:`~pulpcore.app.models.Publication`.
+* :class:`~pulpcore.plugin.models.PublishedMetadata` is a file generated while publishing and
+  belongs to a certain :class:`~pulpcore.app.models.Publication`.
 * :class:`~pulpcore.plugin.models.Publisher` knows specifics of the plugin
   :class:`~pulpcore.plugin.models.Content` to make it available outside of Pulp.
   :class:`~pulpcore.plugin.models.Publisher` defines how to publish content available in Pulp.
