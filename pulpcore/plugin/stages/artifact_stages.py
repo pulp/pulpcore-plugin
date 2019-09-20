@@ -4,7 +4,7 @@ import logging
 
 from django.db.models import Q, Prefetch, prefetch_related_objects
 
-from pulpcore.plugin.models import Artifact, ContentArtifact, ProgressBar, RemoteArtifact
+from pulpcore.plugin.models import Artifact, ContentArtifact, ProgressReport, RemoteArtifact
 
 from .api import Stage
 
@@ -75,7 +75,7 @@ class ArtifactDownloader(Stage):
     Each :class:`~pulpcore.plugin.stages.DeclarativeContent` is sent to `self._out_q` after all of
     its :class:`~pulpcore.plugin.stages.DeclarativeArtifact` objects have been handled.
 
-    This stage creates a ProgressBar named 'Downloading Artifacts' that counts the number of
+    This stage creates a ProgressReport named 'Downloading Artifacts' that counts the number of
     downloads completed. Since it's a stream the total count isn't known until it's finished.
 
     This stage drains all available items from `self._in_q` and starts as many downloaders as
@@ -116,7 +116,7 @@ class ArtifactDownloader(Stage):
         #    Set to None if stage is shutdown.
         content_get_task = _add_to_pending(content_iterator.__anext__())
 
-        with ProgressBar(message='Downloading Artifacts', code='downloading.artifacts') as pb:
+        with ProgressReport(message='Downloading Artifacts', code='downloading.artifacts') as pb:
             try:
                 while pending:
                     done, pending = await asyncio.wait(pending, return_when=asyncio.FIRST_COMPLETED)

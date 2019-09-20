@@ -38,7 +38,7 @@ Here is a gist of how models are related to each other and what each model is re
   :class:`~pulpcore.plugin.models.Publisher`.
 * :class:`~pulpcore.app.models.Distribution` defines how a publication is distributed for a specific
   :class:`~pulpcore.plugin.models.Publisher`.
-* :class:`~pulpcore.plugin.models.ProgressBar` is used to report progress of the task.
+* :class:`~pulpcore.plugin.models.ProgressReport` is used to report progress of the task.
 
 
 An important feature of the current design is deduplication of
