@@ -11,9 +11,10 @@ instance, the ``ContentViewset`` does not include ``update`` because Content Uni
 Pulp 3 (to support Repository Versions).
 
 Most Plugins will implement:
- * viewset(s) for plugin specific content type(s), should be subclassed from ContentViewset
- * viewset(s) for plugin specific remote(s), should be subclassed from RemoteViewset
- * viewset(s) for plugin specific publisher(s), should be subclassed from PublisherViewset
+ * viewset(s) for plugin specific content type(s), should be subclassed from ``ContentViewset`` or
+   ``SingleArtifactContentUploadViewSet``
+ * viewset(s) for plugin specific remote(s), should be subclassed from ``RemoteViewset``
+ * viewset(s) for plugin specific publisher(s), should be subclassed from ``PublisherViewset``
 
 
 Endpoint Namespacing
@@ -92,3 +93,26 @@ this is accomplished.
             return OperationPostponedResponse(result, request)
 
 See :class:`~pulpcore.plugin.tasking.enqueue_with_reservation` for more details.
+
+
+Content Upload ViewSet
+^^^^^^^^^^^^^^^^^^^^^^
+
+For single file content types, there is the special ``SingleArtifactContentUploadViewSet`` to
+derive from, that allows file uploads in the create method, instead of referencing an existing
+Artifact. Also it allows to specify a ``Repository``, to create a new ``RepositoryVersion``
+containing the newly created content. Content creation is then offloaded into a task.
+To use that ViewSet, the serializer for the content type should inherit from
+``SingleArtifactContentUploadSerializer``. By overwriting the ``deferred_validate`` method
+instead of ``validate``, this serializer can do detailed analysis of the given or uploaded Artifact
+in order to fill database fields of the content type like "name", "version", etc. This part of
+validation is only called in the task context.
+
+If any additional context needs to be passed from the ViewSet to the creation task, the
+``get_deferred_context`` method of the ViewSet might be overwritten. It's return value will then be
+available as ``self.context`` in the Serializer.
+
+.. note::
+
+   Context passed from the ViewSet to the Task must be easily serializable. i.e. one cannot
+   return the request from ``get_deferred_context``.
