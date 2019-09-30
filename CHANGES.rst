@@ -13,6 +13,54 @@ Changelog
 
 .. towncrier release notes start
 
+0.1.0rc6.dev (2019-09-30)
+=========================
+
+
+Features
+--------
+
+- Setting `code` on `ProgressBar`.
+  `#5184 <https://pulp.plan.io/issues/5184>`_
+- PublishedMetadata.create_from_file() interface added for creating PublishedMetadata.
+  `#5304 <https://pulp.plan.io/issues/5304>`_
+- Add SingleArtifactContentUploadSerializer a base class for content serializers that accept uploaded files.
+  `#5403 <https://pulp.plan.io/issues/5403>`_
+- DeclarativeArtifacts can have an Artifact without a RemoteArtifact.
+  `#5413 <https://pulp.plan.io/issues/5413>`_
+- Added `plugin_managed` field on repository that plugins can set for repositories that should be managed by plugins and not by users.
+  `#5421 <https://pulp.plan.io/issues/5421>`_
+
+
+Improved Documentation
+----------------------
+
+- Update docs removing database agnostic gotchas.
+  `#5129 <https://pulp.plan.io/issues/5129>`_
+
+
+Deprecations and Removals
+-------------------------
+
+- Remove support for mysql/mariadb making postgresql the only supported database.
+  `#5129 <https://pulp.plan.io/issues/5129>`_
+- PublishedMetadata should no longer be created using the default constructor.
+  `#5304 <https://pulp.plan.io/issues/5304>`_
+- Replace `ProgressBar` with `ProgressReport` and removing `ProgressSpinner`.
+  `#5444 <https://pulp.plan.io/issues/5444>`_
+- Remove custom JSONField implementation from public API
+  `#5465 <https://pulp.plan.io/issues/5465>`_
+
+
+Misc
+----
+
+- `#5444 <https://pulp.plan.io/issues/5444>`_
+
+
+----
+
+
 0.1.0rc5.dev (2019-09-10)
 =========================
 
