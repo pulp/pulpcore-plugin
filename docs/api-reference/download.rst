@@ -121,11 +121,9 @@ size or digest validation. There can also be protocol specific errors such as an
 ``aiohttp.ClientResponse`` being raised when a server responds with a 400+ response such as an HTTP
 403.
 
-Any exception raised is a fatal exception and should likely be recorded with the
-:meth:`~pulpcore.plugin.tasking.Task.append_non_fatal_error` interface. A fatal exception on a
-single download likely does not cause an entire sync to fail, so a downloader's fatal exception is
-recorded as a non-fatal exception on the task. Plugin writers can also choose to halt the entire
-task by allowing the exception be uncaught which would mark the entire task as failed.
+Any exception raised is a fatal exception and should likely be recorded in the
+:meth:`~pulpcore.plugin.models.Task.non_fatal_errors` field. Plugin writers can also choose to halt
+the entire task by allowing the exception be uncaught which would mark the entire task as failed.
 
 .. note::
     The :class:`~pulpcore.plugin.download.HttpDownloader` automatically retry in some cases, but if

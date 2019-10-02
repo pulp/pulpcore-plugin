@@ -19,6 +19,7 @@ from pulpcore.app.models import (  # noqa
     RepositoryContent,
     RepositoryVersion,
     RepositoryVersionDistribution,
+    Task,
 )
 
 from .content import ContentGuard  # noqa
