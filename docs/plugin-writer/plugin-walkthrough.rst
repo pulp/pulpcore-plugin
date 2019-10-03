@@ -28,9 +28,11 @@ To define a new content type(s), e.g. ``ExampleContent``:
   :class:`pulpcore.plugin.serializers.NoArtifactContentSerializer`,
   :class:`pulpcore.plugin.serializers.SingleArtifactContentSerializer`, or
   :class:`pulpcore.plugin.serializers.MultipleArtifactContentSerializer`
-* create a viewset for your new Content type as a subclass of
-  :class:`pulpcore.plugin.viewsets.ContentViewSet`, and define your ``create()`` method based
-  on the serializer you chose.
+* create a viewset for your new Content type. It can be as a subclass of
+  :class:`pulpcore.plugin.viewsets.ContentViewSet`, and you can define your ``create()`` method based
+  on the serializer you chose. If you need a read-only viewset, subclass
+  :class:`pulpcore.plugin.viewsets.ReadOnlyContentViewSet` instead. It's also convenient to subclass
+  :class:`pulpcore.plugin.viewsets.SingleArtifactContentUploadViewSet` if you need an upload support.
 
 :class:`~pulpcore.plugin.models.Content` model should not be used directly anywhere in plugin code.
 Only plugin-defined Content classes are expected to be used.
