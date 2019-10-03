@@ -11,10 +11,10 @@ instance, the ``ContentViewset`` does not include ``update`` because Content Uni
 Pulp 3 (to support Repository Versions).
 
 Most Plugins will implement:
- * viewset(s) for plugin specific content type(s), should be subclassed from ``ContentViewset`` or
-   ``SingleArtifactContentUploadViewSet``
- * viewset(s) for plugin specific remote(s), should be subclassed from ``RemoteViewset``
- * viewset(s) for plugin specific publisher(s), should be subclassed from ``PublisherViewset``
+ * viewset(s) for plugin specific content type(s), should be subclassed from ``ContentViewSet``,
+   ``ReadOnlyContentViewSet`` or ``SingleArtifactContentUploadViewSet``
+ * viewset(s) for plugin specific remote(s), should be subclassed from ``RemoteViewSet``
+ * viewset(s) for plugin specific publisher(s), should be subclassed from ``PublisherViewSet``
 
 
 Endpoint Namespacing
