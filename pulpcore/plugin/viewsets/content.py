@@ -51,7 +51,7 @@ class SingleArtifactContentUploadViewSet(ContentViewSet):
                 artifact = Artifact.objects.get(sha256=artifact.sha256)
             task_payload["artifact"] = ArtifactSerializer(
                 artifact, context={"request": request}
-            ).data["_href"]
+            ).data["pulp_href"]
 
         shared_resources = [artifact]
         if repository:
