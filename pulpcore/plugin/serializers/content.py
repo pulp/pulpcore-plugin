@@ -46,7 +46,8 @@ class SingleArtifactContentUploadSerializer(SingleArtifactContentSerializer):
     def __init__(self, *args, **kwargs):
         """Initializer for SingleArtifactContentUploadSerializer."""
         super().__init__(*args, **kwargs)
-        self.fields["artifact"].required = False
+        if self.fields.get("artifact"):
+            self.fields["artifact"].required = False
 
     def validate(self, data):
         """Validate that we have an Artifact or can create one."""
