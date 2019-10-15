@@ -29,6 +29,13 @@ Response status codes can be generated through the `Meta` class on the serialize
 
 
 .. note::
+    ref_name - a string that is used as the model definition name for this serializer class.
+    If this option is not specified, all serializers have an implicit name derived from their
+    class name. In order to avoid possible collisions, it is better to explicitly define ref_name
+    on the Meta class.
+    Suggested format: ref_name = f'{model._meta.app_label}_{model._meta.model_name}'
+
+.. note::
 
     Plugin authors can provide manual overrides using the `@swagger_auto_schema decorator
     <https://drf-yasg.readthedocs.io/en/stable/drf_yasg.html#drf_yasg.utils.swagger_auto_schema>`_
