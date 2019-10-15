@@ -13,6 +13,50 @@ Changelog
 
 .. towncrier release notes start
 
+0.1.0rc7 (2019-10-15)
+=====================
+
+
+Features
+--------
+
+- Add new `repo_key` class attribute to `Content` which defaults to an empty tuple. Subclasses should
+  use `repo_key` to specify the names of fields, which together should be unique per Repository.
+  Anytime `RepositoryVersion.add_content()` is called, it now automatically removes content that
+  matches the `repo_key`.
+  `#5008 <https://pulp.plan.io/issues/5008>`_
+- Add a ReadOnlyContentViewSet for plugin writers.
+  `#5535 <https://pulp.plan.io/issues/5535>`_
+
+
+Bugfixes
+--------
+
+- Fix `fields` filter for `SingleArtifactContentUploadSerializer`
+  `#5543 <https://pulp.plan.io/issues/5543>`_
+
+
+Improved Documentation
+----------------------
+
+- Document explicit definition of ref_name on the serializer.
+  `#5562 <https://pulp.plan.io/issues/5562>`_
+
+
+Deprecations and Removals
+-------------------------
+
+- Remove pulpcore.plugin.tasking.Task and expose pulpcore.models.Task instead.
+  `#5442 <https://pulp.plan.io/issues/5442>`_
+- Change `_id`, `_created`, `_last_updated`, `_href` to `pulp_id`, `pulp_created`, `pulp_last_updated`, `pulp_href`
+  `#5457 <https://pulp.plan.io/issues/5457>`_
+- Removing `non_fatal_errors` from `Task`.
+  `#5537 <https://pulp.plan.io/issues/5537>`_
+
+
+----
+
+
 0.1.0rc6.dev (2019-09-30)
 =========================
 
